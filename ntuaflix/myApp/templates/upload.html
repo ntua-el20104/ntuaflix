@@ -1,0 +1,15 @@
+<!-- ntuaflix_api/administrator/templates/upload_titlebasics.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload TSV File</title>
+</head>
+<body>
+    <h2>Upload TSV File</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>
