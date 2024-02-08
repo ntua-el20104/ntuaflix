@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ primaryTitle }}</title>
+</head>
+<body>
+
+<h1>{{ primaryTitle }}</h1>
+
+<p>Title ID: {{ titleID }}</p>
+<p>Type: {{ type }}</p>
+<p>Original Title: {{ originalTitle }}</p>
+{% if titlePoster == NULL %}
+  <p>Title poster: not available for this movie</p> 
+{% else %}
+  <p>Title Poster</p>
+    <img src="{{ titlePoster }}" alt="{{ primaryTitle }}">
+{% endif %}
+
+<p>startYear: {{ startYear }}</p>
+
+<p>endYear: {{ endYear }}</p>
+<p>Genre: {{ genres }}</p>
+{% if rating == NULL %}
+<p>There are no available ratings for this movie</p>
+{% else %}
+<p>Average Rating: {{averageRating}}</p>
+<p>Number of Votes: {{numVotes}}</p>
+{% endif %}
+<hr>
+
+<p>Back to <a href="/ntuaflix_api/title">Titles</a></p>
+
+</body>
+</html> 
+
+
