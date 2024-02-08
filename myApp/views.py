@@ -56,6 +56,7 @@ def title_details(request, tconst):
         rating_object = (f"Average Rating: {rating.averageRating}",f"Number of Votes: {rating.numVotes}" )
     except Ratings.DoesNotExist:
         rating = None
+        rating_object = None
 
     try:
         akas = Akas.objects.filter(titleId=tconst)
@@ -63,6 +64,7 @@ def title_details(request, tconst):
 
     except Akas.DoesNotExist:
         akas = None
+        akas_titles = None
     
     try:
         # Assuming you've already fetched 'principal' as you've shown:
@@ -76,6 +78,7 @@ def title_details(request, tconst):
                 principal_id_and_name.append(( f"nameId: {x.nconst}" ,f"primary name: {name_entry.primaryName}"  ,f"category: {x.category}"))
             except Names.DoesNotExist:
         # Handle the case where no corresponding entry in Names exists
+                name_entry = None
                 principal_id_and_name.append((x.nconst, x.category, None))
 
 # Now, principal_id_and_name contains tuples of (nconst, category, primaryName) for each matching entry

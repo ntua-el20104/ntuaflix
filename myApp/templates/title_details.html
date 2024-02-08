@@ -11,7 +11,7 @@
 <p>Type: {{ type }}</p>
 <p>Original Title: {{ originalTitle }}</p>
 {% if titlePoster == NULL %}
-  <p>Title poster: not available for this movie</p> 
+  <p>Title poster: not available for this title</p> 
 {% else %}
   <p>Title Poster</p>
     <img src="{{ titlePoster }}" alt="{{ primaryTitle }}">
@@ -35,7 +35,7 @@
 {% endif %}
 
 {% if rating_object == NULL %}
-<p>There are no available ratings for this movie</p>
+<p>There are no available ratings for this title</p>
 {% else %}
 <p>Rating: {{rating_object}}</p>
 {% endif %}
