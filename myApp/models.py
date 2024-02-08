@@ -48,7 +48,7 @@ class Episode(models.Model):#a table that contains the seasons and number of epi
 
 class Ratings(models.Model):
   tconst = models.CharField(max_length=255, unique=True, primary_key=True)
-  averageRating = models.DecimalField(max_digits=3, decimal_places=1, null=False, blank=False)
+  averageRating = models.CharField(max_length=255, null=False, blank=False)
   numVotes = models.PositiveIntegerField(null=False, blank=False)
 
 class Akas(models.Model):

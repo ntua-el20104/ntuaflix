@@ -50,10 +50,39 @@ def title_details(request, tconst):
   try:  
     title = Movies.objects.get(tconst=tconst)
     template = loader.get_template('title_details.html')
+    
     try:
-      rating = Ratings.objects.get(tconst=tconst)
+        rating = Ratings.objects.get(tconst=tconst)
+        rating_object = (f"Average Rating: {rating.averageRating}",f"Number of Votes: {rating.numVotes}" )
     except Ratings.DoesNotExist:
-      rating = None
+        rating = None
+
+    try:
+        akas = Akas.objects.filter(titleId=tconst)
+        akas_titles = [(f"title: {entry.title}", f"region: {entry.region}") for entry in akas]
+
+    except Akas.DoesNotExist:
+        akas = None
+    
+    try:
+        # Assuming you've already fetched 'principal' as you've shown:
+        principal = Principals.objects.filter(tconst=tconst)
+
+# For each principal, fetch the corresponding name from the Names table and create tuples
+        principal_id_and_name = []
+        for x in principal:
+            try:
+                name_entry = Names.objects.get(nconst=x.nconst)
+                principal_id_and_name.append(( f"nameId: {x.nconst}" ,f"primary name: {name_entry.primaryName}"  ,f"category: {x.category}"))
+            except Names.DoesNotExist:
+        # Handle the case where no corresponding entry in Names exists
+                principal_id_and_name.append((x.nconst, x.category, None))
+
+# Now, principal_id_and_name contains tuples of (nconst, category, primaryName) for each matching entry
+
+    except Principals.DoesNotExist:
+        principal = None
+    
     if title.img_url_asset == None :
         full_url = None
     else:
@@ -77,13 +106,16 @@ def title_details(request, tconst):
         'startYear': title.startYear,
         'endYear':title.endYear,
         'genres': title.genres.split(","),
+        'titleAkas':akas_titles,
+        'principals': principal_id_and_name,
         'rating':rating,
-        'averageRating': rating.averageRating,
-        'numVotes':rating.numVotes
+        'rating_object':rating_object
+        # 'averageRating': rating.averageRating,
+        # 'numVotes':rating.numVotes
     }
 
     # if request.method == 'GET':
-    #   return JsonResponse(titleObject)
+    #return JsonResponse(titleObject)
     # else:
     return HttpResponse(template.render(titleObject,request))
   except Movies.DoesNotExist:

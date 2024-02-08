@@ -21,11 +21,23 @@
 
 <p>endYear: {{ endYear }}</p>
 <p>Genre: {{ genres }}</p>
-{% if rating == NULL %}
+
+{% if titleAkas == NULL%}
+<p>There are no available Akas for this title</p>
+{% else %}
+<p>Title Akas: {{titleAkas}}</p>
+{% endif %}
+
+{% if principals == NULL%}
+<p>There are no available principals for this title</p>
+{% else %}
+<p>principals: {{principals}}</p>
+{% endif %}
+
+{% if rating_object == NULL %}
 <p>There are no available ratings for this movie</p>
 {% else %}
-<p>Average Rating: {{averageRating}}</p>
-<p>Number of Votes: {{numVotes}}</p>
+<p>Rating: {{rating_object}}</p>
 {% endif %}
 <hr>
 
