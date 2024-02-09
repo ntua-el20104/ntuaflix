@@ -12,6 +12,43 @@ def login(request):
     template = loader.get_template('login.html')
     return HttpResponse(template.render())
 
+def bygenre(request):
+    # Get parameters from request
+    qgenre = request.GET.get('qgenre').capitalize()
+    minrating = request.GET.get('minrating')
+    yrFrom = request.GET.get('yrFrom')
+    yrTo = request.GET.get('yrTo')
+
+        # Start with all movies
+    titles = Movies.objects.all().order_by('primaryTitle')
+    
+    results_title = "{} Titles".format(qgenre if qgenre else "All")
+
+        # Filter by genre if qgenre is provided
+    if qgenre:
+        titles = titles.filter(genres__icontains=qgenre)
+        results_title = "{} Titles".format(qgenre)
+    
+    # Filter by year range if yrFrom and/or yrTo are provided
+    if yrFrom and yrTo:
+        titles = titles.filter(startYear__gte=yrFrom, startYear__lte=yrTo)
+        results_title += " From {} to {}".format(yrFrom, yrTo)
+    elif yrFrom:
+        titles = titles.filter(startYear__gte=yrFrom)
+        results_title += " From {}".format(yrFrom)
+    elif yrTo:
+        titles = titles.filter(startYear__lte=yrTo)
+        results_title += " Up to {}".format(yrTo)
+    
+    # Join with Ratings table and filter by minimum rating if provided
+    if minrating:
+        titles = titles.filter(tconst__in=Ratings.objects.filter(averageRating__gte=minrating).values_list('tconst', flat=True))
+        results_title += " Rated at least {}".format(minrating)
+    
+    
+    # Render the response with the filtered context
+    return render(request, 'bygenre.html', {'titles': titles, 'results_title': results_title})
+
 def names(request):
     names = Names.objects.all().order_by('primaryName').values() 
     template = loader.get_template('names.html')

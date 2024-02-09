@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h1>Movies</h1>
+    
+    <form action="{% url 'bygenre' %}" method="get">
+        <input type="text" name="qgenre" placeholder="Genre...">
+        <input type="text" name="minrating" placeholder="Minimum rating...">
+        <input type="text" name="yrFrom" placeholder="Year from...">
+        <input type="text" name="yrTo" placeholder="Year to...">
+        <button type="submit">Filter</button>
+    </form>
+    
+    <h2>{{ results_title }}</h2>
+
+    <ul class="movie-list">
+      {% for x in titles %}
+      <li>
+        <button onclick="location.href='title/{{ x.tconst }}'">{{ x.primaryTitle }}</button>
+      </li>
+      {% endfor %}
+    </ul>
+    
+</body>
+</html>
