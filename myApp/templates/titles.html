@@ -131,6 +131,11 @@
 
 <h1>Movies</h1>
 
+<form action="{% url 'search_results' %}" method="get">
+    <input type="text" name="query" placeholder="Search for a movie...">
+    <button type="submit">Search</button>
+  </form>
+
 <ul class="movie-list">
   {% for x in titles %}
   <li>

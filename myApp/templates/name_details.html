@@ -1,30 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>{{ name.primaryName }}</title>
+  <title>{{ name }}</title>
 </head>
 <body>
 
-<h1>{{ name.primaryName }}</h1>
-{% if name.birthYear == NULL %}
-<p>No data for birthYear</p>
-{%else%} 
-<p>Birth Year: {{ name.birthYear }}</p>
-{% endif %}
+<h1>{{ name}}</h1>
+<p>Name Id: {{nameID}}</p>
+<p>Name: {{name}}</p>
 
-{% if name.primaryProfession == NULL %}
-<p>No data for Primary Profession</p>
-{%else%} 
-<p>Primary Profession: {{ name.primaryProfession }}</p>
-{% endif %}
-
-{% if name.img_url_asset == NULL %}
+{% if namePoster == NULL %}
   <p>Photo: not available for this person</p> 
 {% else %}
   <p>Photo</p>
-    <img src="{{ image_url }}" alt="{{ name.primaryName }}">
+    <img src="{{ namePoster }}" alt="{{ name }}">
 {% endif %}
 
+{% if birthYr == NULL %}
+<p>No data for birthYear</p>
+{%else%} 
+<p>Birth Year: {{ birthYr }}</p>
+{% endif %}
+
+{% if deathYr == NULL %}
+<p>Death Year: still alive </p>
+{%else%} 
+<p>Death Year: {{ deathYr }}</p>
+{% endif %}
+
+{% if profession == NULL %}
+<p>No data for Primary Profession</p>
+{%else%} 
+<p>Primary Profession: {{ profession }}</p>
+{% endif %}
+
+{% if nameTitles == NULL %}
+<p>No titles for this person</p>
+{% else %}
+<p>Name Titles: {{nameTitles}}</p>
+{% endif %} 
 
 
 <hr>

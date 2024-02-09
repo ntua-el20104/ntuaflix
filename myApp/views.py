@@ -13,7 +13,7 @@ def login(request):
     return HttpResponse(template.render())
 
 def names(request):
-    names = Names.objects.all().values() 
+    names = Names.objects.all().order_by('primaryName').values() 
     template = loader.get_template('names.html')
     context = {
         'names': names
@@ -21,30 +21,53 @@ def names(request):
     return HttpResponse(template.render(context, request))
 
 def name_details(request, nconst):
-  name = Names.objects.get(nconst=nconst)
+  person = Names.objects.get(nconst=nconst)
   template2 = loader.get_template('my_custom_filters.py')
 
-  if name.img_url_asset == "\\N" or not name.img_url_asset:
+  try:
+      personTitles = Principals.objects.filter(nconst=nconst)
+      nameTitles = [(f"titleID: {x.tconst}", f"category: {x.category}") for x in personTitles]
+  except personTitles.DoesNotExist:
+      personTitles = None
+      nameTitles = None
+
+
+  if person.img_url_asset == "\\N" or not person.img_url_asset:
     full_url = "no image for this movie"
   else:
-    baseurl = name.img_url_asset
+    baseurl = person.img_url_asset
     width = "w220_and_h330_face"
     full_url = baseurl.replace("{width_variable}", width)
 
   template = loader.get_template('name_details.html')
-  context = {
-    'name': name,
-    'image_url': full_url
+  
+  nameObject = {
+    'person': person,
+    'nameID':person.nconst,
+    'name':person.primaryName,
+    'namePoster': full_url,
+    'birthYr':person.birthYear,
+    'deathYr':person.deathYear,
+    'profession':person.primaryProfession,
+    'nameTitles':nameTitles
     }
-  return HttpResponse(template.render(context, request))
+  return HttpResponse(template.render(nameObject, request))
 
 def titles(request):
-    titles = Movies.objects.all().values() 
+    titles = Movies.objects.all().order_by('primaryTitle').values() 
     template = loader.get_template('titles.html')
     context = {
         'titles': titles
     }
     return HttpResponse(template.render(context, request))
+
+def search_results(request):
+    query = request.GET.get('query', '')
+    if query:
+        movies = Movies.objects.filter(primaryTitle__icontains=query)
+    else:
+        movies = Movies.objects.none()  # Return an empty queryset if no query
+    return render(request, 'search_titles.html', {'movies': movies})
 
 def title_details(request, tconst):
   try:  
@@ -56,6 +79,7 @@ def title_details(request, tconst):
         rating_object = (f"Average Rating: {rating.averageRating}",f"Number of Votes: {rating.numVotes}" )
     except Ratings.DoesNotExist:
         rating = None
+        rating_object = None
 
     try:
         akas = Akas.objects.filter(titleId=tconst)
@@ -63,19 +87,21 @@ def title_details(request, tconst):
 
     except Akas.DoesNotExist:
         akas = None
+        akas_titles = None
     
     try:
         # Assuming you've already fetched 'principal' as you've shown:
         principal = Principals.objects.filter(tconst=tconst)
 
-# For each principal, fetch the corresponding name from the Names table and create tuples
+# For each principal, fetch the corresponding person from the Names table and create tuples
         principal_id_and_name = []
         for x in principal:
             try:
                 name_entry = Names.objects.get(nconst=x.nconst)
-                principal_id_and_name.append(( f"nameId: {x.nconst}" ,f"primary name: {name_entry.primaryName}"  ,f"category: {x.category}"))
+                principal_id_and_name.append(( f"nameId: {x.nconst}" ,f"primary person: {name_entry.primaryName}"  ,f"category: {x.category}"))
             except Names.DoesNotExist:
         # Handle the case where no corresponding entry in Names exists
+                name_entry = None
                 principal_id_and_name.append((x.nconst, x.category, None))
 
 # Now, principal_id_and_name contains tuples of (nconst, category, primaryName) for each matching entry

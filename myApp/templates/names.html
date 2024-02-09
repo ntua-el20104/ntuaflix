@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <style>
-    #shuffleButton {
-      background-color: blue;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-  </style>
 </head>
 <body>
 
 <h1>Names</h1>
+
+<!-- Search Form -->
+<form action="/search" method="get">
+  <input type="text" name="search_query" placeholder="Search for a movie...">
+  <button type="submit">Search</button>
+</form>
 
 <ul>
   {% for y in names %}
@@ -24,3 +20,4 @@
 
 </body>
 </html>
+
