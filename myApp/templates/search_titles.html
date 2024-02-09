@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Search Results</h2>
+
+<ul>
+  {% for movie in movies %}
+  <li>
+    <button onclick="location.href='title/{{ movie.tconst }}'">{{ movie.primaryTitle }}</button>
+  </li>
+  {% empty %}
+  <li>No movies found.</li>
+  {% endfor %}
+</ul>
+
+</body>
+</html>
