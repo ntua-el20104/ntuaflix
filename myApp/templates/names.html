@@ -7,14 +7,16 @@
 <h1>Names</h1>
 
 <!-- Search Form -->
-<form action="/search" method="get">
-  <input type="text" name="search_query" placeholder="Search for a movie...">
+<form action="{% url 'search_name' %}" method="get">
+  <input type="text" name="query" placeholder="Search for a name...">
   <button type="submit">Search</button>
 </form>
 
-<ul>
+<ul class="name-list">
   {% for y in names %}
-  <li><a href="name/{{ y.nconst }}">{{ y.primaryName }} </a></li>
+  <li>
+    <button onclick="location.href='name/{{ y.nconst }}'">{{ y.primaryName }} </button>
+  </li>
   {% endfor %}
 </ul>
 
