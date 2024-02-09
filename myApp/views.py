@@ -40,8 +40,8 @@ def name_details(request, nconst):
       nameTitles = None
 
 
-  if person.img_url_asset == "\\N" or not person.img_url_asset:
-    full_url = "no image for this movie"
+  if person.img_url_asset == None :
+    full_url = None
   else:
     baseurl = person.img_url_asset
     width = "w220_and_h330_face"
