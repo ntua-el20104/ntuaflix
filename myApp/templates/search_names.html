@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Search Results</h2>
+
+<ul>
+  {% for name in names %}
+  <li>
+    <button onclick="location.href='name/{{ name.nconst }}'">{{ name.primaryName }}</button>
+  </li>
+  {% empty %}
+  <li>No movies found.</li>
+  {% endfor %}
+</ul>
+
+</body>
+</html>

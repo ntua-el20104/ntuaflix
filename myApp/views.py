@@ -20,6 +20,14 @@ def names(request):
     }
     return HttpResponse(template.render(context, request))
 
+def search_names(request):
+    name_query = request.GET.get('query', '')
+    if name_query:
+        names = Names.objects.filter(primaryName__icontains=name_query)
+    else:
+        names = Names.objects.none()  # Return an empty queryset if no query
+    return render(request, 'search_names.html', {'names': names})
+
 def name_details(request, nconst):
   person = Names.objects.get(nconst=nconst)
   template2 = loader.get_template('my_custom_filters.py')
@@ -61,10 +69,10 @@ def titles(request):
     }
     return HttpResponse(template.render(context, request))
 
-def search_results(request):
-    query = request.GET.get('query', '')
-    if query:
-        movies = Movies.objects.filter(primaryTitle__icontains=query)
+def search_titles(request):
+    title_query = request.GET.get('query', '')
+    if title_query:
+        movies = Movies.objects.filter(primaryTitle__icontains=title_query)
     else:
         movies = Movies.objects.none()  # Return an empty queryset if no query
     return render(request, 'search_titles.html', {'movies': movies})
