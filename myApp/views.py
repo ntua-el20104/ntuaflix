@@ -189,7 +189,7 @@ def title_details(request, tconst):
         'titleID':title.tconst,
         'primaryTitle':title.primaryTitle,
         'type':title.titleType,
-        'originalTitle': title.originalTitle,
+        'originalTitle': title.primaryTitle,
         'titlePoster': full_url,
         'startYear': title.startYear,
         'endYear':title.endYear,
@@ -338,17 +338,18 @@ def upload_akas(request):
                     titleId = row['titleId']
                     ordering = row['ordering']
                     title = row['title']
-                    region = row.get('region', '\\N')
-                    language = row.get('language', '\\N')
-                    types = row.get('types', '\\N')
-                    attributes = row.get('attributes', '\\N')
+                    region = row['region'] if row['region'] !='\\N' else None
+                    language = row['language'] if row['language'] !='\\N' else None
+                    types = row['types'] if row['types'] !='\\N' else None
+                    attributes = row['attributes'] if row['attributes'] !='\\N' else None
                     isOriginalTitle = row['isOriginalTitle']
 
                     # Create or update Akas instance
                     created = Akas.objects.update_or_create(
                         titleId=titleId,
+                        ordering= ordering,
                         defaults={
-                            'ordering': ordering,
+                            
                             'title': title,
                             'region': region,
                             'language': language,
@@ -366,20 +367,177 @@ def upload_akas(request):
 
             message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
             return HttpResponse(message)
-
     return render(request, 'upload_akas.html', {'form': form})
 
-def health_check(request):
-    db_conn = connections['default']
-    try:
-        db_conn.cursor()
-        # Εδώ μπορείτε να προσθέσετε οποιοδήποτε άλλο test θεωρείτε απαραίτητο
-        # για να επιβεβαιώσετε τη συνδεσιμότητα με τη βάση δεδομένων ή με ένα API.
-        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
-        return JsonResponse({"status": "OK", "dataconnection": connection_string})
-    except OperationalError:
-        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
-        return JsonResponse({"status": "failed", "dataconnection": connection_string})
+def upload_principals(request):
+    success_count = 0
+    error_count = 0
+
+    form = UploadFileForm()
+
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+
+        if form.is_valid() and 'file' in request.FILES:
+            file = request.FILES['file']
+            try:
+                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+
+                for row in reader:
+                    # Parse data from the CSV row
+                    tconst = row['tconst']
+                    ordering = row['ordering']
+                    nconst = row['nconst']
+                    category = row['category']
+                    job = row.get('job', '\\N')
+                    characters = row.get('characters', '\\N')
+                    img_url_asset = row.get('img_url_asset', '\\N')
+
+                    # Create or update Principals instance
+                    created = Principals.objects.update_or_create(
+                        tconst=tconst,
+                        nconst=nconst,
+                        defaults={
+                            'ordering': ordering,
+                            'category': category,
+                            'job': job,
+                            'characters': characters,
+                            'img_url_asset': img_url_asset if img_url_asset != '\\N' else None,
+                        }
+                    )
+                    if created:
+                        success_count += 1
+                    else:
+                        error_count += 1
+            except ValidationError:
+                error_count += 1
+
+            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+            return HttpResponse(message)
+
+    return render(request, 'upload_principals.html', {'form': form})
+
+def upload_crews(request):
+    success_count = 0
+    error_count = 0
+
+    form = UploadFileForm()
+
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+
+        if form.is_valid() and 'file' in request.FILES:
+            file = request.FILES['file']
+            try:
+                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+
+                for row in reader:
+                    # Parse data from the CSV row
+                    tconst = row['tconst']
+                    directors = row.get('directors', '\\N')
+                    writers = row.get('writers', '\\N')
+
+                    # Create or update Crews instance
+                    created = Crews.objects.update_or_create(
+                        tconst=tconst,
+                        defaults={
+                            'directors': directors,
+                            'writers': writers,
+                        }
+                    )
+                    if created:
+                        success_count += 1
+                    else:
+                        error_count += 1
+            except ValidationError:
+                error_count += 1
+
+            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+            return HttpResponse(message)
+
+    return render(request, 'upload_crews.html', {'form': form})
+
+def upload_episodes(request):
+    success_count = 0
+    error_count = 0
+
+    form = UploadFileForm()
+
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+
+        if form.is_valid() and 'file' in request.FILES:
+            file = request.FILES['file']
+            try:
+                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+
+                for row in reader:
+                    # Parse data from the CSV row
+                    tconst = row['tconst']
+                    parentTconst = row['parentTconst']
+                    seasonNumber = row.get('seasonNumber', '\\N')
+                    episodeNumber = row.get('episodeNumber', '\\N')
+
+                    # Create or update Episode instance
+                    created = Episode.objects.update_or_create(
+                        tconst=tconst,
+                        defaults={
+                            'parentTconst': parentTconst,
+                            'seasonNumber': seasonNumber,
+                            'episodeNumber': episodeNumber,
+                        }
+                    )
+                    if created:
+                        success_count += 1
+                    else:
+                        error_count += 1
+            except ValidationError:
+                error_count += 1
+
+            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+            return HttpResponse(message)
+
+    return render(request, 'upload_episodes.html', {'form': form})
+
+def upload_ratings(request):
+    success_count = 0
+    error_count = 0
+
+    form = UploadFileForm()
+
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+
+        if form.is_valid() and 'file' in request.FILES:
+            file = request.FILES['file']
+            try:
+                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+
+                for row in reader:
+                    # Parse data from the CSV row
+                    tconst = row['tconst']
+                    averageRating = row['averageRating']
+                    numVotes = row['numVotes']
+
+                    # Create or update Ratings instance
+                    created = Ratings.objects.update_or_create(
+                        tconst=tconst,
+                        defaults={
+                            'averageRating': averageRating,
+                            'numVotes': numVotes,
+                        }
+                    )
+                    if created:
+                        success_count += 1
+                    else:
+                        error_count += 1
+            except ValidationError:
+                error_count += 1
+
+            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+            return HttpResponse(message)
+
+    return render(request, 'upload_ratings.html', {'form': form})
 
 # /////////////////////////////// TITLE Names ///////////////////////////////////////
 
