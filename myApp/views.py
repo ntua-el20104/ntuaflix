@@ -538,6 +538,17 @@ def upload_ratings(request):
             return HttpResponse(message)
 
     return render(request, 'upload_ratings.html', {'form': form})
+def health_check(request):
+    db_conn = connections['default']
+    try:
+        db_conn.cursor()
+        # Εδώ μπορείτε να προσθέσετε οποιοδήποτε άλλο test θεωρείτε απαραίτητο
+        # για να επιβεβαιώσετε τη συνδεσιμότητα με τη βάση δεδομένων ή με ένα API.
+        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+        return JsonResponse({"status": "OK", "dataconnection": connection_string})
+    except OperationalError:
+        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+        return JsonResponse({"status": "failed", "dataconnection": connection_string})
 
 # /////////////////////////////// TITLE Names ///////////////////////////////////////
 
