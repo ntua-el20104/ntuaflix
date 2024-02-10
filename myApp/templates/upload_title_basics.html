@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Title Basics</title>
+</head>
+<body>
+    <h2>Upload TSV File for Title Basics</h2>
+    <p>Select a TSV file to upload, then click "Upload File".</p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload File</button>
+    </form>
+</body>
+</html>
