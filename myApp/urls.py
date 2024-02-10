@@ -11,6 +11,7 @@ urlpatterns = [
     path("upload",views.upload, name="upload"),
     path("upload/title_basics", views.upload_title_basics, name='upload title basics'),
     path("upload/name_basics", views.upload_names, name='upload name basics'),
+    path("upload/title_akas", views.upload_akas, name='upload title akas'),
     path("searchtitle", views.search_titles, name='search_title'),
     path("searchname",views.search_names, name='search_name'),
     path("bygenre",views.bygenre, name='bygenre')

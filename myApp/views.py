@@ -317,7 +317,55 @@ def upload_names(request):
             return HttpResponse(message)
     return render(request, 'upload_name_basics.html', {'form': form})
 
+def upload_akas(request):
+    success_count = 0
+    error_count = 0
 
+    form = UploadFileForm()
+
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+
+        if form.is_valid() and 'file' in request.FILES:
+            file = request.FILES['file']
+            try:
+                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+
+                for row in reader:
+                    # Parse data from the CSV row
+                    titleId = row['titleId']
+                    ordering = row['ordering']
+                    title = row['title']
+                    region = row.get('region', '\\N')
+                    language = row.get('language', '\\N')
+                    types = row.get('types', '\\N')
+                    attributes = row.get('attributes', '\\N')
+                    isOriginalTitle = row['isOriginalTitle']
+
+                    # Create or update Akas instance
+                    created = Akas.objects.update_or_create(
+                        titleId=titleId,
+                        defaults={
+                            'ordering': ordering,
+                            'title': title,
+                            'region': region,
+                            'language': language,
+                            'types': types,
+                            'attributes': attributes,
+                            'isOriginalTitle': isOriginalTitle,
+                        }
+                    )
+                    if created:
+                        success_count += 1
+                    else:
+                        error_count += 1
+            except ValidationError:
+                error_count += 1
+
+            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+            return HttpResponse(message)
+
+    return render(request, 'upload_akas.html', {'form': form})
 
 # /////////////////////////////// TITLE Names ///////////////////////////////////////
 
