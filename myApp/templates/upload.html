@@ -1,15 +1,17 @@
-<!-- ntuaflix_api/administrator/templates/upload_titlebasics.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Upload TSV File</title>
+    <meta charset="UTF-8">
+    <title>Upload Data</title>
 </head>
 <body>
-    <h2>Upload TSV File</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form }}
-        <button type="submit">Upload</button>
-    </form>
+    <h1>Data Upload</h1>
+    <ul>
+        <li><a href="/ntuaflix_api/upload/title_basics">Upload Title Basics</a></li>
+        <li><a href="/ntuaflix_api/upload/name_basics">Upload Name Basics</a></li>
+    
+        <!-- Add more links as needed for other upload categories -->
+    </ul>
+
 </body>
 </html>
