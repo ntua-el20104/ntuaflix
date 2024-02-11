@@ -185,11 +185,11 @@ def title_details(request, tconst):
     }
 
     titleObject = {
-        'title':title,
+        # 'title':title,
         'titleID':title.tconst,
         'primaryTitle':title.primaryTitle,
         'type':title.titleType,
-        'originalTitle': title.primaryTitle,
+        'originalTitle': title.originalTitle,
         'titlePoster': full_url,
         'startYear': title.startYear,
         'endYear':title.endYear,
@@ -538,7 +538,7 @@ def upload_ratings(request):
             return HttpResponse(message)
 
     return render(request, 'upload_ratings.html', {'form': form})
-def health_check(request):
+def healthcheck(request):
     db_conn = connections['default']
     try:
         db_conn.cursor()
