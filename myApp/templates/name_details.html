@@ -16,15 +16,22 @@
     <img src="{{ namePoster }}" alt="{{ name }}">
 {% endif %}
 
-{% if birthYr == NULL %}
-<p>No data for birthYear</p>
-{%else%} 
-<p>Birth Year: {{ birthYr }}</p>
+{% if birthYr == NULL and deathYr == NULL %}
+<p>No data for Birth Year or Death Year</p>
 {% endif %}
 
-{% if deathYr == NULL %}
-<p>Death Year: still alive </p>
-{%else%} 
+{% if birthYr != NULL and deathYr == NULL %}
+<p>Birth Year: {{ birthYr }}</p>
+<p>Death Year: Still Alive</p>
+{% endif %}
+
+{% if birthYr != NULL and deathYr != NULL %}
+<p>Birth Year: {{ birthYr }}</p>
+<p>Death Year: {{ deathYr }}</p>
+{% endif %}
+
+{% if birthYr == NULL and deathYr != NULL %}
+<p>Birth Year: Not Known</p>
 <p>Death Year: {{ deathYr }}</p>
 {% endif %}
 

@@ -110,10 +110,41 @@ def name_details(request, nconst):
     'namePoster': full_url,
     'birthYr':person.birthYear,
     'deathYr':person.deathYear,
-    'profession':person.primaryProfession,
+    'profession':person.primaryProfession.split(","),
     'nameTitles':nameTitles
     }
   return HttpResponse(template.render(nameObject, request))
+
+def name_details_json(request, nconst):
+  person = Names.objects.get(nconst=nconst)
+  template2 = loader.get_template('my_custom_filters.py')
+
+  try:
+      personTitles = Principals.objects.filter(nconst=nconst)
+      print(personTitles)
+      nameTitles = [(f"titleID: {x.tconst}", f"category: {x.category}") for x in personTitles]
+  except personTitles.DoesNotExist:
+      personTitles = None
+      nameTitles = None
+
+
+  if person.img_url_asset == None :
+    full_url = None
+  else:
+    baseurl = person.img_url_asset
+    width = "w220_and_h330_face"
+    full_url = baseurl.replace("{width_variable}", width)
+  
+  nameObject = {
+    'nameID':person.nconst,
+    'name':person.primaryName,
+    'namePoster': full_url,
+    'birthYr':person.birthYear,
+    'deathYr':person.deathYear,
+    'profession':person.primaryProfessions.split(","),
+    'nameTitles':nameTitles
+    }
+  return JsonResponse(nameObject)
 
 def titles(request):
     titles = Movies.objects.all().order_by('primaryTitle').values() 
@@ -185,7 +216,7 @@ def title_details(request, tconst):
     }
 
     titleObject = {
-        # 'title':title,
+        'title':title,
         'titleID':title.tconst,
         'primaryTitle':title.primaryTitle,
         'type':title.titleType,
@@ -202,9 +233,6 @@ def title_details(request, tconst):
         # 'numVotes':rating.numVotes
     }
 
-    # if request.method == 'GET':
-    #return JsonResponse(titleObject)
-    # else:
     return HttpResponse(template.render(titleObject,request))
   except Movies.DoesNotExist:
         return JsonResponse({'error': 'Movie not found'}, status=404)
@@ -213,6 +241,10 @@ def title_details_json(request, tconst):
   try:  
     title = Movies.objects.get(tconst=tconst)
     
+    
+    genre_list=title.genres.split(",")
+    formatted_genres = [f"genreTitle: {genre.strip()}" for genre in genre_list]
+
     try:
         rating = Ratings.objects.get(tconst=tconst)
         rating_object = (f"Average Rating: {rating.averageRating}",f"Number of Votes: {rating.numVotes}" )
@@ -263,13 +295,12 @@ def title_details_json(request, tconst):
 
     titleObject = {
         'titleID':title.tconst,
-        'primaryTitle':title.primaryTitle,
         'type':title.titleType,
         'originalTitle': title.originalTitle,
         'titlePoster': full_url,
         'startYear': title.startYear,
         'endYear':title.endYear,
-        'genres': title.genres.split(","),
+        'genres': formatted_genres,
         'titleAkas':akas_titles,
         'principals': principal_id_and_name,
         'rating_object':rating_object
@@ -281,12 +312,6 @@ def title_details_json(request, tconst):
     return JsonResponse(titleObject)
   except Movies.DoesNotExist:
         return JsonResponse({'error': 'Movie not found'}, status=404)
-
-from django.template.loader import render_to_string
-
-
-
-
 
 
 def upload(request):
