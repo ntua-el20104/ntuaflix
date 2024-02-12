@@ -206,6 +206,79 @@ def title_details(request, tconst):
     return HttpResponse(template.render(titleObject,request))
   except Movies.DoesNotExist:
         return JsonResponse({'error': 'Movie not found'}, status=404)
+  
+def title_details_json(request, tconst):
+  try:  
+    title = Movies.objects.get(tconst=tconst)
+    
+    try:
+        rating = Ratings.objects.get(tconst=tconst)
+        rating_object = (f"Average Rating: {rating.averageRating}",f"Number of Votes: {rating.numVotes}" )
+    except Ratings.DoesNotExist:
+        rating = None
+        rating_object = None
+
+    try:
+        akas = Akas.objects.filter(titleId=tconst)
+        akas_titles = [(f"title: {entry.title}", f"region: {entry.region}") for entry in akas]
+
+    except Akas.DoesNotExist:
+        akas = None
+        akas_titles = None
+    
+    try:
+        # Assuming you've already fetched 'principal' as you've shown:
+        principal = Principals.objects.filter(tconst=tconst)
+
+# For each principal, fetch the corresponding person from the Names table and create tuples
+        principal_id_and_name = []
+        for x in principal:
+            try:
+                name_entry = Names.objects.get(nconst=x.nconst)
+                principal_id_and_name.append(( f"nameId: {x.nconst}" ,f"primary person: {name_entry.primaryName}"  ,f"category: {x.category}"))
+            except Names.DoesNotExist:
+        # Handle the case where no corresponding entry in Names exists
+                name_entry = None
+                principal_id_and_name.append((x.nconst, x.category, None))
+
+# Now, principal_id_and_name contains tuples of (nconst, category, primaryName) for each matching entry
+
+    except Principals.DoesNotExist:
+        principal = None
+    
+    if title.img_url_asset == None :
+        full_url = None
+    else:
+        baseurl = title.img_url_asset
+        width = "w220_and_h330_face"
+        full_url = baseurl.replace("{width_variable}", width)
+    
+    context = {
+        'title': title,
+        'image_url': full_url,
+        'rating':rating 
+    }
+
+    titleObject = {
+        'titleID':title.tconst,
+        'primaryTitle':title.primaryTitle,
+        'type':title.titleType,
+        'originalTitle': title.originalTitle,
+        'titlePoster': full_url,
+        'startYear': title.startYear,
+        'endYear':title.endYear,
+        'genres': title.genres.split(","),
+        'titleAkas':akas_titles,
+        'principals': principal_id_and_name,
+        'rating_object':rating_object
+        # 'averageRating': rating.averageRating,
+        # 'numVotes':rating.numVotes
+    }
+
+
+    return JsonResponse(titleObject)
+  except Movies.DoesNotExist:
+        return JsonResponse({'error': 'Movie not found'}, status=404)
 
 from django.template.loader import render_to_string
 
