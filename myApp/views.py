@@ -10,6 +10,8 @@ from django.core.exceptions import ValidationError
 from MySQLdb import IntegrityError
 from .forms import *
 from .models import *
+from django.db import connections
+from django.db.utils import OperationalError
 
 from django.db import DatabaseError
 from django.contrib.auth.models import User
@@ -183,7 +185,7 @@ def title_details(request, tconst):
     }
 
     titleObject = {
-        'title':title,
+        # 'title':title,
         'titleID':title.tconst,
         'primaryTitle':title.primaryTitle,
         'type':title.titleType,
@@ -609,6 +611,17 @@ def upload_ratings(request):
             return HttpResponse(message)
 
     return render(request, 'upload_ratings.html', {'form': form})
+def healthcheck(request):
+    db_conn = connections['default']
+    try:
+        db_conn.cursor()
+        # Εδώ μπορείτε να προσθέσετε οποιοδήποτε άλλο test θεωρείτε απαραίτητο
+        # για να επιβεβαιώσετε τη συνδεσιμότητα με τη βάση δεδομένων ή με ένα API.
+        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+        return JsonResponse({"status": "OK", "dataconnection": connection_string})
+    except OperationalError:
+        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+        return JsonResponse({"status": "failed", "dataconnection": connection_string})
 
 # /////////////////////////////// TITLE Names ///////////////////////////////////////
 
