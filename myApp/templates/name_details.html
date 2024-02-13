@@ -1,202 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>{{ name }}</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f0f0f0;
+            background: url('https://e0.pxfuel.com/wallpapers/559/84/desktop-wallpaper-movie-theater-background-movie-cinema.jpg') no-repeat center center fixed; 
+            background-size: cover;
             color: #333;
+            line-height: 1.6;
         }
-
+    
         header {
-            background-color: #000000;
+            background-color: #000;
             color: white;
             text-align: center;
             padding: 20px 0;
         }
-
+    
         nav {
-            background-color: #202020;
+            background-color: #333;
             padding: 10px 0;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
+    
         nav a {
             color: white;
-            margin: 0 20px;
+            margin: 0 15px;
             text-decoration: none;
-            font-size: 1.2em;
+            font-size: 16px;
+            transition: color 0.3s ease-out;
         }
-
+    
         nav a:hover {
-            color: #f0f0f0;
-            text-decoration: underline;
+            color: #A5D6A7;
         }
-
+    
         .container {
             display: flex;
             justify-content: center;
-            padding: 20px;
+            align-items: flex-start;
+            padding: 40px 15px;
             flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
         }
-
-        .content, .sidebar {
-            background-color: #fff;
-            padding: 20px;
-            margin: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
+    
         .sidebar {
-            flex: 1;
-            max-width: 30%;
+            flex: 0 0 200px;
+            margin: 10px;
         }
-
-        .content {
-            flex: 2;
-            max-width: 70%;
-        }
-
-        .image img {
+    
+        .sidebar .image img {
             width: 100%;
+            height: auto;
             border-radius: 8px;
-            max-width: 400px;
+            margin-bottom: 20px;
         }
-
-        h1, p {
-            color: #444;
-            margin-top: 0;
+    
+        .content {
+            flex: 1;
+            max-width: 600px;
+            margin: 10px;
+            text-align: left;
+            padding: 20px 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-
-        p {
-            font-size: 16px;
+    
+        .content h1, .content p {
+            margin-bottom: 1rem;
+        }
+    
+        .content ul {
+            padding-left: 20px;
+        }
+    
+        .content li {
             line-height: 1.6;
+            margin-bottom: 5px;
         }
-
-        a {
-            color: #ff9c2a;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        ul {
-            list-style-type: disc; /* Use disc, circle, or square for bullets */
-            margin: 0;
-            padding-left: 20px; /* Adjust indentation of list */
-        }
-
-        li {
-            margin-bottom: 5px; /* Space between list items */
-        }
-
+    
         footer {
-            background-color: #000000;
+            background-color: #333;
             color: white;
             text-align: center;
             padding: 20px 0;
-            width: 100%;
-            position: relative;
-            bottom: 0;
-            left: 0;
+            margin-top: 20px;
         }
-
-        footer p {
-            margin: 0;
-            padding: 0;
-        }
-
+    
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
             }
-
+    
             .sidebar, .content {
                 max-width: 100%;
             }
+    
+            .sidebar {
+                order: 2; /* Sidebar moves below the content on small screens */
+            }
+    
+            .content {
+                order: 1;
+            }
         }
     </style>
+    
 </head>
+
 <body>
 
-<header>
-    <h1>Name Details</h1>
-</header>
+    <header>
+        <h1>Name Details</h1>
+    </header>
 
-<nav>
-  <a href="/ntuaflix_api/title">Movies</a>
-  <a href="/ntuaflix_api/name">Names</a>
-  <a href="/ntuaflix_api/upload">Upload</a>
-  <a href="/ntuaflix_api/bygenre">By Genre</a>
-</nav>
+    <nav>
+        <a href="/ntuaflix_api/title">Movies</a>
+        <a href="/ntuaflix_api/name">Names</a>
+        <a href="/ntuaflix_api/upload">Upload</a>
+        <a href="/ntuaflix_api/bygenre">By Genre</a>
+    </nav>
 
-<div class="container">
-    <div class="sidebar">
-        {% if namePoster != NULL %}
+    <div class="container">
+        <div class="sidebar">
+            {% if namePoster != NULL %}
             <div class="image">
                 <img src="{{ namePoster }}" alt="{{ name  }}" />
             </div>
-        {% else %}
+            {% else %}
             <p>Photo: Not available for this person</p>
-        {% endif %}
-    </div>
-    <div class="content">
-        <h1>{{ name }}</h1>
-        <p>Name Id: {{ nameID }}</p>
-        <p>Name: {{ name }}</p>
-    
-        {% if birthYr != NULL %}
-            <p>Birth Year: {{ birthYr }}</p>
-        {% else %}
-            <p>No data for birth year.</p>
-        {% endif %}
-    
-        {% if deathYr != NULL %}
-            <p>Death Year: {{ deathYr }}</p>
-        {% else %}
-            <p>Death Year: Still alive</p>
-        {% endif %}
-    
-        {% if profession != NULL %}
-            <p>Primary Profession:</p>
+            {% endif %}
+        </div>
+        <div class="content">
+            <h1>{{ name }}</h1>
+            <p><strong>Name Id:</strong> {{ nameID }}</p>
+            <p><strong>Name:</strong> {{ name }}</p>
+
+            {% if birthYr != NULL %}
+            <p><strong>Birth Year:</strong> {{ birthYr }}</p>
+            {% else %}
+            <p><strong>Birth Year:</strong> No data for birth year.</p>
+            {% endif %}
+
+            {% if deathYr != NULL %}
+            <p><strong>Death Year:</strong> {{ deathYr }}</p>
+            {% else %}
+            <p><strong>Death Year:</strong> Still alive</p>
+            {% endif %}
+
+            {% if profession != NULL %}
+            <p><strong>Primary Profession:</strong></p>
             <ul>
-              {% for prof in profession %}
+                {% for prof in profession %}
                 <li>{{ prof }}</li>
-              {% endfor %}
-            </ul>
-        {% else %}
-            <p>No data for Primary Profession.</p>
-        {% endif %}
-    
-        {% if nameTitles != NULL %}
-            <p>Name Titles:</p>
-            <ul>
-                {% for title in nameTitles %}
-                    <li>{{ title }}</li>
                 {% endfor %}
             </ul>
-        {% else %}
-            <p>No titles for this person.</p>
-        {% endif %} 
-    
-        <hr>
-    
-        <p>Back to <a href="/ntuaflix_api/name">Names</a></p>
+            {% else %}
+            <p><strong>Primary Profession:</strong> No data for Primary Profession.</p>
+            {% endif %}
+
+            {% if nameTitles != NULL %}
+            <p><strong>Name Titles:</strong></p>
+            <ul>
+                {% for title in nameTitles %}
+                <li>{{ title }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p><strong>Name Titles:</strong> No titles for this person.</p>
+            {% endif %}
+
+            <hr>
+
+            <p>Back to <a href="/ntuaflix_api/name">Names</a></p>
+        </div>
+
     </div>
-</div>
-  
-<footer>
-    <p>© 2024 Ntuaflix</p>
-</footer>
+
+    <footer>
+        <p>© 2024 Ntuaflix</p>
+    </footer>
 
 </body>
+
 </html>
