@@ -7,18 +7,11 @@ from django.views.decorators.csrf import csrf_exempt
 import csv, json, re
 from .forms import UploadFileForm
 from django.core.exceptions import ValidationError
-from MySQLdb import IntegrityError
 from .forms import *
 from .models import *
 from django.db import connections
 from django.db.utils import OperationalError
-from django.db import DatabaseError
-from django.contrib.auth.models import User
-# from .serializers import UserSerializer
-from rest_framework.views import APIView
-from rest_framework import status
-from rest_framework.response import Response
-from django.db import IntegrityError
+
 
 def home(request):
     template = loader.get_template('home.html')
@@ -193,7 +186,7 @@ def search_names_json(request):
             'birthYr': person.birthYear,
             'deathYr': person.deathYear,
             'profession': person.primaryProfession.split(",") if person.primaryProfession else [],
-            'nameTitles': nameTitles
+            'nameTitles': nameTitles,
         }
         names_list.append(nameObject)
     
@@ -207,8 +200,14 @@ def name_details(request, nconst):
   template2 = loader.get_template('my_custom_filters.py')
 
   try:
-      personTitles = Principals.objects.filter(nconst=nconst)
-      nameTitles = [(f"titleID: {x.tconst}", f"category: {x.category}") for x in personTitles]
+        personTitles = Principals.objects.filter(nconst=nconst)
+        nameTitles = []
+        for x in personTitles:
+            movie = Movies.objects.get(tconst=x.tconst)  # Get the corresponding movie
+            nameTitles.append(movie.primaryTitle)  # Append title as string
+  except Movies.DoesNotExist:
+        nameTitles = []
+
   except personTitles.DoesNotExist:
       personTitles = None
       nameTitles = None
