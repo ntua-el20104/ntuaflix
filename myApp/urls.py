@@ -30,5 +30,7 @@ urlpatterns = [
     path("searchname",views.search_names_json, name='search_name_json'),
     
     path("bygenre/html",views.bygenre, name='bygenre_html'),
-    path("bygenre",views.bygenre_json, name="bygenre_json")
+    path("bygenre",views.bygenre_json, name="bygenre_json"),
+
+    path('application/x-www-form-urlencoded', views.user_endpoint_view, name='user-endpoint')
 ]
