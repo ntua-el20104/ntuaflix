@@ -19,10 +19,6 @@
             padding: 20px 0;
         }
 
-        header h1 {
-          color: white;
-        }
-
         .container {
             display: flex;
             justify-content: center;
@@ -54,12 +50,12 @@
             max-width: 400px;
         }
 
-        h1 {
+        h1, h2 {
             color: #444;
             margin-top: 0;
         }
 
-        .movie-details p, .footer p {
+        .movie-details p, .footer p, dd, dt {
             font-size: 16px;
             line-height: 1.6;
         }
@@ -88,6 +84,30 @@
         a:hover {
             color:purple;
             text-decoration: underline;
+        }
+
+        .rating-section {
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        dl {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 10px 20px;
+            margin: 0;
+        }
+
+        dt {
+            font-weight: bold;
+        }
+
+        dd {
+            margin: 0;
+            text-align: right;
         }
 
         @media (max-width: 768px) {
@@ -134,15 +154,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>International Title A</td>
-                            <td>US</td>
-                        </tr>
-                        <tr>
-                            <td>International Title B</td>
-                            <td>UK</td>
-                        </tr>
-                        <!-- Add more rows as needed -->
+                        <!-- Title Akas rows here -->
                     </tbody>
                 </table>
             {% endif %}
@@ -166,7 +178,15 @@
                 </table>
             {% endif %}
             {% if rating_object %}
-                <p><strong>Rating:</strong> {{ rating_object }}</p>
+                <div class="rating-section">
+                    <h2>Rating Details</h2>
+                    <dl>
+                        <dt>Average Rating:</dt>
+                        <dd>{{ rating.averageRating }} / 10</dd>
+                        <dt>Number of Votes:</dt>
+                        <dd>{{ rating.numVotes }}</dd>
+                    </dl>
+                </div>
             {% else %}
                 <p>There are no available ratings for this title.</p>
             {% endif %}
