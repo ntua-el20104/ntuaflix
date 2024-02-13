@@ -5,78 +5,80 @@
     <title>Names</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f0f0f0;
+            background: url('https://png.pngtree.com/thumb_back/fh260/background/20230703/pngtree-3d-rendered-movie-theatre-with-white-screen-image_3732826.jpg') no-repeat center center fixed; 
+            background-size: cover;
             color: #333;
+            line-height: 1.6;
         }
-
+    
         header {
-            background-color: #000000;
+            background-color: black; /* A modern shade of blue */
             color: white;
             padding: 20px 0;
             text-align: center;
         }
-
+    
         nav {
-            background-color: #202020;
+            background-color: #1a1a1a;
             padding: 10px 0;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
+    
         nav a {
             color: white;
             margin: 0 20px;
             text-decoration: none;
             font-size: 1.2em;
+            transition: color 0.3s ease-out;
         }
-
+    
         nav a:hover {
-            color: #f0f0f0;
+            color: #E53935; /* A shade of red for interactivity */
             text-decoration: underline;
         }
-
+    
         .search-section {
-        display: flex;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    .search-section form {
-        width: 30%; /* Adjust the width as needed */
-        display: flex;
-    }
-
-    .search-box {
-        flex-grow: 1; /* Allows input to fill space */
-        margin-right: 10px; /* Add space between input and button */
-    }
-
-        input[type="text"] {
-            width: 60%;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+    
+        .search-section form {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            margin: 20px auto;
+        }
+    
+        .search-box {
+            flex-grow: 1;
+            margin-right: 10px;
             padding: 15px;
             border: 2px solid #333;
             border-radius: 5px;
             font-size: 1.2em;
         }
-
+    
         button {
             padding: 15px 25px;
             border: none;
             border-radius: 5px;
-            background-color: #ff9c2a;
+            background-color: #E53935; /* Changed to red shade */
             color: white;
             font-size: 1.2em;
             cursor: pointer;
+            transition: background-color 0.3s ease-out;
         }
-
+    
         button:hover {
-            background-color: #e68a00;
+            background-color: #B71C1C; /* Darker shade for hover */
         }
-
+    
         ul {
             list-style-type: none;
             padding: 0;
@@ -84,43 +86,66 @@
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
             max-width: 800px;
-            margin: auto;
+            margin: 20px auto;
         }
-
+    
         li {
-            background: white;
-            border-radius: 5px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            text-align: center;
-        }
+        background: #f9f9f9; /* Very light grey background */
+        border-radius: 5px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    }
 
-        li button {
-            background-color: transparent;
-            color: #333;
-            border: none;
-            padding: 0;
-            font-size: 1em;
-            cursor: pointer;
-        }
+    li:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
 
-        li button:hover {
-            text-decoration: underline;
-        }
+    li button {
+        background-color: transparent;
+        color: #2a2929;
+        border: none;
+        padding: 0;
+        font-size: 1em;
+        cursor: pointer;
+        font-weight: bold; /* Make names bold */
+    }
 
+    li button:hover {
+        text-decoration: underline;
+    }
+    
         footer {
-            background-color: #202020;
+            background-color: #123456; /* Matched with header */
             color: white;
             text-align: center;
             padding: 10px 0;
-            margin-top: 20px;
         }
-
+    
         footer p {
             margin: 0;
             padding: 0;
         }
+    
+        @media (max-width: 768px) {
+            .search-section form {
+                flex-direction: column;
+            }
+    
+            .search-box, button {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+    
+            nav a {
+                font-size: 14px;
+            }
+        }
     </style>
+    
 </head>
 <body>
 
