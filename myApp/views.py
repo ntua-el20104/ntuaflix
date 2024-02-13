@@ -12,7 +12,7 @@ from .forms import *
 from .models import *
 from django.db import connections
 from django.db.utils import OperationalError
-
+import re
 from django.db import DatabaseError
 from django.contrib.auth.models import User
 # from .serializers import UserSerializer
@@ -73,6 +73,17 @@ def bygenre_json(request):
     yrFrom = request.GET.get('yrFrom')
     yrTo = request.GET.get('yrTo')
 
+    if yrFrom and yrTo:
+        try:
+            yrFrom = int(yrFrom)
+            yrTo = int(yrTo)
+            if yrTo < yrFrom:
+                # If yrTo is less than yrFrom, return a 400 Bad Request response
+                return JsonResponse({'error': 'yrTo must not be less than yrFrom'}, status=400)
+        except ValueError:
+            # In case yrFrom or yrTo are not valid integers
+            return JsonResponse({'error': 'Invalid year format'}, status=400)
+
     # Start with all movies ordered by title
     titles = Movies.objects.all().order_by('primaryTitle')
 
@@ -124,8 +135,10 @@ def bygenre_json(request):
             'rating_object': rating_object
         }
         titles_list.append(titleObject)
-
-    return JsonResponse({'movies': titles_list})
+    
+    if not titles_list:
+        return JsonResponse({'movies': titles_list}, status=204) 
+    return JsonResponse({'movies': titles_list}, status=200)
 
 def names(request):
     names = Names.objects.all().order_by('primaryName').values() 
@@ -137,6 +150,7 @@ def names(request):
 
 def search_names(request):
     name_query = request.GET.get('query', '')
+
     if name_query:
         names = Names.objects.filter(primaryName__icontains=name_query)
     else:
@@ -145,6 +159,10 @@ def search_names(request):
 
 def search_names_json(request):
     name_query = request.GET.get('query', '')
+
+    if re.search(r'\d', name_query):  # This regex looks for any digit in the query
+        return JsonResponse({'error': 'Name must not contain numbers'}, status=400)
+
     if name_query:
         names = Names.objects.filter(primaryName__icontains=name_query)
     else:
@@ -180,7 +198,9 @@ def search_names_json(request):
         }
         names_list.append(nameObject)
     
-    return JsonResponse({'names': names_list})
+    if not names_list:
+        return JsonResponse({'names': names_list}, status=204) 
+    return JsonResponse({'names': names_list}, status=200)
 
 
 def name_details(request, nconst):
@@ -220,9 +240,11 @@ def name_details_json(request, nconst):
   person = Names.objects.get(nconst=nconst)
   template2 = loader.get_template('my_custom_filters.py')
 
+  if not person:
+    return JsonResponse({'person': nameObject}, status=204)
+
   try:
       personTitles = Principals.objects.filter(nconst=nconst)
-      print(personTitles)
       nameTitles = [(f"titleID: {x.tconst}", f"category: {x.category}") for x in personTitles]
   except personTitles.DoesNotExist:
       personTitles = None
@@ -245,6 +267,7 @@ def name_details_json(request, nconst):
     'profession':person.primaryProfession.split(","),
     'nameTitles':nameTitles
     }
+
   return JsonResponse(nameObject)
 
 def titles(request):
