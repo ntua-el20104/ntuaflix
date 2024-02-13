@@ -1,25 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>Names</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        header {
+            background-color: #000000;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #202020;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            margin: 0 20px;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+
+        nav a:hover {
+            color: #f0f0f0;
+            text-decoration: underline;
+        }
+
+        .search-section {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .search-section form {
+        width: 30%; /* Adjust the width as needed */
+        display: flex;
+    }
+
+    .search-box {
+        flex-grow: 1; /* Allows input to fill space */
+        margin-right: 10px; /* Add space between input and button */
+    }
+
+        input[type="text"] {
+            width: 60%;
+            padding: 15px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            font-size: 1.2em;
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff9c2a;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #e68a00;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        li {
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        li button {
+            background-color: transparent;
+            color: #333;
+            border: none;
+            padding: 0;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        li button:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            background-color: #202020;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+
+        footer p {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Names</h1>
+<header>
+    <h1>Ntuaflix</h1>
+</header>
 
-<!-- Search Form -->
-<form action="{% url 'search_name' %}" method="get">
-  <input type="text" name="query" placeholder="Search for a name...">
-  <button type="submit">Search</button>
-</form>
+<nav>
+    <a href="/ntuaflix_api/title">Movies</a>
+    <a href="/ntuaflix_api/name">Names</a>
+    <a href="/ntuaflix_api/upload">Upload</a>
+    <a href="/ntuaflix_api/bygenre">By Genre</a>
+</nav>
+
+<div class="search-section">
+  <form action="{% url 'search_name' %}" method="get">
+      <input type="text" name="query" class="search-box" placeholder="Search for a name...">
+      <button type="submit">Search</button>
+  </form>
+</div>
+
 
 <ul class="name-list">
   {% for y in names %}
   <li>
-    <button onclick="location.href='name/{{ y.nconst }}/html'">{{ y.primaryName }} </button>
+    <button onclick="location.href='name/{{ y.nconst }}/html'">{{ y.primaryName }}</button>
   </li>
   {% endfor %}
 </ul>
 
 </body>
 </html>
-

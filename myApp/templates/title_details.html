@@ -1,49 +1,187 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>{{ primaryTitle }}</title>
+    <meta charset="UTF-8">
+    <title>{{ primaryTitle }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        header, .footer {
+            background-color: #000000;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        header h1 {
+          color: white;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .movie-content, .movie-sidebar {
+            background-color: #fff;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .movie-sidebar {
+            flex: 1;
+            max-width: 30%;
+        }
+
+        .movie-content {
+            flex: 2;
+            max-width: 70%;
+        }
+
+        .movie-image img {
+            width: 100%;
+            border-radius: 8px;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #444;
+            margin-top: 0;
+        }
+
+        .movie-details p, .footer p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        a {
+            color: #ff9c2a;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .movie-sidebar, .movie-content {
+                max-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<h1>{{ primaryTitle }}</h1>
+<header>
+    <h1>Ntuaflix</h1>
+</header>
 
-<p>Title ID: {{ titleID }}</p>
-<p>Type: {{ type }}</p>
-<p>Original Title: {{ originalTitle }}</p>
-{% if titlePoster == NULL %}
-  <p>Title poster: not available for this title</p> 
-{% else %}
-  <p>Title Poster</p>
-    <img src="{{ titlePoster }}" alt="{{ primaryTitle }}">
-{% endif %}
+<div class="container">
+    <div class="movie-sidebar">
+        {% if titlePoster %}
+            <div class="movie-image">
+                <img src="{{ titlePoster }}" alt="{{ primaryTitle }}" />
+            </div>
+        {% else %}
+            <p>Poster not available.</p>
+        {% endif %}
+    </div>
+    <div class="movie-content">
+        <h1>{{ primaryTitle }} ({{ startYear }})</h1>
+        <div class="movie-details">
+            <p><strong>Type:</strong> {{ type }}</p>
+            <p><strong>Original Title:</strong> {{ originalTitle }}</p>
+            <p><strong>Genre:</strong> {{ genres }}</p>
+            <p><strong>End Year:</strong> {{ endYear }}</p>
+            {% if titleAkas %}
+                <h2>Title Akas</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Region</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>International Title A</td>
+                            <td>US</td>
+                        </tr>
+                        <tr>
+                            <td>International Title B</td>
+                            <td>UK</td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            {% endif %}
+            {% if principals %}
+                <h2>Principals</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Doe</td>
+                            <td>Director</td>
+                            <td>Film</td>
+                        </tr>
+                        <tr>
+                            <td>Jane Smith</td>
+                            <td>Producer</td>
+                            <td>TV</td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            {% endif %}
+            {% if rating_object %}
+                <p><strong>Rating:</strong> {{ rating_object }}</p>
+            {% else %}
+                <p>There are no available ratings for this title.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
-<p>startYear: {{ startYear }}</p>
-
-<p>endYear: {{ endYear }}</p>
-<p>Genre: {{ genres }}</p>
-
-{% if titleAkas == NULL%}
-<p>There are no available Akas for this title</p>
-{% else %}
-<p>Title Akas: {{titleAkas}}</p>
-{% endif %}
-
-{% if principals == NULL%}
-<p>There are no available principals for this title</p>
-{% else %}
-<p>principals: {{principals}}</p>
-{% endif %}
-
-{% if rating_object == NULL %}
-<p>There are no available ratings for this title</p>
-{% else %}
-<p>Rating: {{rating_object}}</p>
-{% endif %}
-<hr>
-
-<p>Back to <a href="/ntuaflix_api/title">Titles</a></p>
+<div class="footer">
+    <p>Back to <a href="/ntuaflix_api/title">Titles</a></p>
+</div>
 
 </body>
-</html> 
-
-
+</html>

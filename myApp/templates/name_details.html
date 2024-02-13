@@ -1,56 +1,202 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>{{ name }}</title>
+    <meta charset="UTF-8">
+    <title>{{ name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        header {
+            background-color: #000000;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        nav {
+            background-color: #202020;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            margin: 0 20px;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+
+        nav a:hover {
+            color: #f0f0f0;
+            text-decoration: underline;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .content, .sidebar {
+            background-color: #fff;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .sidebar {
+            flex: 1;
+            max-width: 30%;
+        }
+
+        .content {
+            flex: 2;
+            max-width: 70%;
+        }
+
+        .image img {
+            width: 100%;
+            border-radius: 8px;
+            max-width: 400px;
+        }
+
+        h1, p {
+            color: #444;
+            margin-top: 0;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        a {
+            color: #ff9c2a;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        ul {
+            list-style-type: disc; /* Use disc, circle, or square for bullets */
+            margin: 0;
+            padding-left: 20px; /* Adjust indentation of list */
+        }
+
+        li {
+            margin-bottom: 5px; /* Space between list items */
+        }
+
+        footer {
+            background-color: #000000;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+            left: 0;
+        }
+
+        footer p {
+            margin: 0;
+            padding: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar, .content {
+                max-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<h1>{{ name}}</h1>
-<p>Name Id: {{nameID}}</p>
-<p>Name: {{name}}</p>
+<header>
+    <h1>Ntuaflix</h1>
+</header>
 
-{% if namePoster == NULL %}
-  <p>Photo: Not available for this person</p> 
-{% else %}
-  <p>Photo</p>
-    <img src="{{ namePoster }}" alt="{{ name }}">
-{% endif %}
+<nav>
+  <a href="/ntuaflix_api/title">Movies</a>
+  <a href="/ntuaflix_api/name">Names</a>
+  <a href="/ntuaflix_api/upload">Upload</a>
+  <a href="/ntuaflix_api/bygenre">By Genre</a>
+</nav>
 
-{% if birthYr == NULL and deathYr == NULL %}
-<p>No data for Birth Year or Death Year</p>
-{% endif %}
-
-{% if birthYr != NULL and deathYr == NULL %}
-<p>Birth Year: {{ birthYr }}</p>
-<p>Death Year: Still Alive</p>
-{% endif %}
-
-{% if birthYr != NULL and deathYr != NULL %}
-<p>Birth Year: {{ birthYr }}</p>
-<p>Death Year: {{ deathYr }}</p>
-{% endif %}
-
-{% if birthYr == NULL and deathYr != NULL %}
-<p>Birth Year: Not Known</p>
-<p>Death Year: {{ deathYr }}</p>
-{% endif %}
-
-{% if profession == NULL %}
-<p>No data for Primary Profession</p>
-{%else%} 
-<p>Primary Profession: {{ profession }}</p>
-{% endif %}
-
-{% if nameTitles == NULL %}
-<p>No titles for this person</p>
-{% else %}
-<p>Name Titles: {{nameTitles}}</p>
-{% endif %} 
-
-
-<hr>
-
-<p>Back to <a href="/ntuaflix_api/name">Names</a></p>
+<div class="container">
+    <div class="sidebar">
+        {% if namePoster != NULL %}
+            <div class="image">
+                <img src="{{ namePoster }}" alt="{{ name  }}" />
+            </div>
+        {% else %}
+            <p>Photo: Not available for this person</p>
+        {% endif %}
+    </div>
+    <div class="content">
+        <h1>{{ name }}</h1>
+        <p>Name Id: {{ nameID }}</p>
+        <p>Name: {{ name }}</p>
+    
+        {% if birthYr != NULL %}
+            <p>Birth Year: {{ birthYr }}</p>
+        {% else %}
+            <p>No data for birth year.</p>
+        {% endif %}
+    
+        {% if deathYr != NULL %}
+            <p>Death Year: {{ deathYr }}</p>
+        {% else %}
+            <p>Death Year: Still alive</p>
+        {% endif %}
+    
+        {% if profession != NULL %}
+            <p>Primary Profession:</p>
+            <ul>
+              {% for prof in profession %}
+                <li>{{ prof }}</li>
+              {% endfor %}
+            </ul>
+        {% else %}
+            <p>No data for Primary Profession.</p>
+        {% endif %}
+    
+        {% if nameTitles != NULL %}
+            <p>Name Titles:</p>
+            <ul>
+                {% for title in nameTitles %}
+                    <li>{{ title }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No titles for this person.</p>
+        {% endif %} 
+    
+        <hr>
+    
+        <p>Back to <a href="/ntuaflix_api/name">Names</a></p>
+    </div>
+</div>
+  
+<footer>
+    <p>© 2024 Ntuaflix</p>
+</footer>
 
 </body>
-</html> 
+</html>

@@ -4,7 +4,7 @@
 
     <h1>Movies</h1>
     
-    <form action="{% url 'bygenre_html' %}" method="get">
+    <form action="{% url 'bygenre' %}" method="get">
         <input type="text" name="qgenre" placeholder="Genre...">
         <input type="text" name="minrating" placeholder="Minimum rating...">
         <input type="text" name="yrFrom" placeholder="Year from...">
@@ -17,7 +17,7 @@
     <ul class="movie-list">
       {% for x in titles %}
       <li>
-        <button onclick="location.href='/ntuaflix_api/title/{{ x.tconst }}/html'">{{ x.primaryTitle }}</button>
+        <button onclick="location.href='title/{{ x.tconst }}/html'">{{ x.primaryTitle }}</button>
       </li>
       {% endfor %}
     </ul>
