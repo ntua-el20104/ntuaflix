@@ -387,7 +387,7 @@ def title_details(request, tconst):
         for x in principal:
             try:
                 name_entry = Names.objects.get(nconst=x.nconst)
-                principal_id_and_name.append(( f"nameId: {x.nconst}" ,f"primary person: {name_entry.primaryName}"  ,f"category: {x.category}"))
+                principal_id_and_name.append((name_entry.primaryName,x.category,x.nconst))
             except Names.DoesNotExist:
         # Handle the case where no corresponding entry in Names exists
                 name_entry = None

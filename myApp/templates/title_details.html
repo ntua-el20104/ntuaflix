@@ -81,11 +81,12 @@
         }
 
         a {
-            color: #ff9c2a;
+            color:blue;
             text-decoration: none;
         }
 
         a:hover {
+            color:purple;
             text-decoration: underline;
         }
 
@@ -103,7 +104,7 @@
 <body>
 
 <header>
-    <h1>Ntuaflix</h1>
+    <h1>Title Details</h1>
 </header>
 
 <div class="container">
@@ -152,21 +153,15 @@
                         <tr>
                             <th>Name</th>
                             <th>Role</th>
-                            <th>Category</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for principal in principals %}
                         <tr>
-                            <td>John Doe</td>
-                            <td>Director</td>
-                            <td>Film</td>
+                            <td><a href="/ntuaflix_api/name/{{ principal.2 }}/html">{{ principal.0 }}</a></td> <!-- Display primary person -->
+                            <td>{{ principal.1 }}</td> <!-- Display category --><!-- Display nameId -->
                         </tr>
-                        <tr>
-                            <td>Jane Smith</td>
-                            <td>Producer</td>
-                            <td>TV</td>
-                        </tr>
-                        <!-- Add more rows as needed -->
+                        {% endfor %}    
                     </tbody>
                 </table>
             {% endif %}
