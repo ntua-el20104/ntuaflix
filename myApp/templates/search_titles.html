@@ -2,12 +2,17 @@
 <html>
 <body>
 
-<h2>Search Results</h2>
+<h2>Titles</h2>
+
+<form action="{% url 'search_title' %}" method="get">
+  <input type="text" name="query" placeholder="Search for a movie...">
+  <button type="submit">Search</button>
+</form>
 
 <ul>
   {% for movie in movies %}
   <li>
-    <button onclick="location.href='title/{{ movie.tconst }}'">{{ movie.primaryTitle }}</button>
+    <button onclick="location.href='/ntuaflix_api/title/{{ movie.tconst }}/html'">{{ movie.primaryTitle }}</button>
   </li>
   {% empty %}
   <li>No movies found.</li>

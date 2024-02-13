@@ -66,6 +66,67 @@ def bygenre(request):
     # Render the response with the filtered context
     return render(request, 'bygenre.html', {'titles': titles, 'results_title': results_title})
 
+def bygenre_json(request):
+     # Get parameters from request
+    qgenre = request.GET.get('qgenre')
+    minrating = request.GET.get('minrating')
+    yrFrom = request.GET.get('yrFrom')
+    yrTo = request.GET.get('yrTo')
+
+    # Start with all movies ordered by title
+    titles = Movies.objects.all().order_by('primaryTitle')
+
+    # Filter by genre, year range, and join with Ratings if minrating is provided
+    if qgenre:
+        titles = titles.filter(genres__icontains=qgenre)
+    if yrFrom and yrTo:
+        titles = titles.filter(startYear__gte=yrFrom, startYear__lte=yrTo)
+    elif yrFrom:
+        titles = titles.filter(startYear__gte=yrFrom)
+    elif yrTo:
+        titles = titles.filter(startYear__lte=yrTo)
+    if minrating:
+        titles = titles.filter(tconst__in=Ratings.objects.filter(averageRating__gte=minrating).values_list('tconst', flat=True))
+
+    titles_list = []
+    for title in titles:
+        try:
+            rating = Ratings.objects.get(tconst=title.tconst)
+            rating_object = {
+                "Average Rating": rating.averageRating,
+                "Number of Votes": rating.numVotes
+            }
+        except Ratings.DoesNotExist:
+            rating_object = None
+
+        akas_titles = list(Akas.objects.filter(titleId=title.tconst).values('title', 'region'))
+        principals = Principals.objects.filter(tconst=title.tconst)
+        principal_id_and_name = [{
+            "nameId": principal.nconst,
+            "primaryName": Names.objects.get(nconst=principal.nconst).primaryName if Names.objects.filter(nconst=principal.nconst).exists() else None,
+            "category": principal.category
+        } for principal in principals]
+
+        full_url = None  # Replace with logic to construct full URL if available
+
+        titleObject = {
+            'title': title.primaryTitle,
+            'titleID': title.tconst,
+            'primaryTitle': title.primaryTitle,
+            'type': title.titleType,
+            'originalTitle': title.originalTitle,
+            'titlePoster': full_url,  # Assume logic to define or replace this
+            'startYear': title.startYear,
+            'endYear': title.endYear,
+            'genres': title.genres.split(",") if title.genres else [],
+            'titleAkas': akas_titles,
+            'principals': principal_id_and_name,
+            'rating_object': rating_object
+        }
+        titles_list.append(titleObject)
+
+    return JsonResponse({'movies': titles_list})
+
 def names(request):
     names = Names.objects.all().order_by('primaryName').values() 
     template = loader.get_template('names.html')
@@ -81,6 +142,46 @@ def search_names(request):
     else:
         names = Names.objects.none()  # Return an empty queryset if no query
     return render(request, 'search_names.html', {'names': names})
+
+def search_names_json(request):
+    name_query = request.GET.get('query', '')
+    if name_query:
+        names = Names.objects.filter(primaryName__icontains=name_query)
+    else:
+        names = Names.objects.none()  # Return an empty queryset if no query
+    
+    names_list = []
+    for person in names:
+        person = Names.objects.get(nconst=person.nconst)
+        try:
+            personTitles = Principals.objects.filter(nconst=person.nconst)
+            nameTitles = [(f"titleID: {x.tconst}", f"category: {x.category}") for x in personTitles]
+        except personTitles.DoesNotExist:
+            personTitles = None
+            nameTitles = None
+
+
+        if person.img_url_asset == None :
+            full_url = None
+        else:
+            baseurl = person.img_url_asset
+            width = "w220_and_h330_face"
+            full_url = baseurl.replace("{width_variable}", width)
+
+        nameObject = {
+            'person': person.primaryName,  # Use primaryName for the 'person' field
+            'nameID': person.nconst,
+            'name': person.primaryName,
+            'namePoster': full_url,
+            'birthYr': person.birthYear,
+            'deathYr': person.deathYear,
+            'profession': person.primaryProfession.split(",") if person.primaryProfession else [],
+            'nameTitles': nameTitles
+        }
+        names_list.append(nameObject)
+    
+    return JsonResponse({'names': names_list})
+
 
 def name_details(request, nconst):
   person = Names.objects.get(nconst=nconst)
@@ -141,7 +242,7 @@ def name_details_json(request, nconst):
     'namePoster': full_url,
     'birthYr':person.birthYear,
     'deathYr':person.deathYear,
-    'profession':person.primaryProfessions.split(","),
+    'profession':person.primaryProfession.split(","),
     'nameTitles':nameTitles
     }
   return JsonResponse(nameObject)
@@ -161,6 +262,80 @@ def search_titles(request):
     else:
         movies = Movies.objects.none()  # Return an empty queryset if no query
     return render(request, 'search_titles.html', {'movies': movies})
+
+def search_titles_json(request):
+    title_query = request.GET.get('query', '')
+    if title_query:
+        movies = Movies.objects.filter(primaryTitle__icontains=title_query)
+        print(movies)
+    else:
+        movies = Movies.objects.none()  # Return an empty queryset if no query
+    
+    titles_list = []
+    for title in movies:  
+            title = Movies.objects.get(tconst=title.tconst)
+            template = loader.get_template('title_details.html')
+            
+            try:
+                rating = Ratings.objects.get(tconst=title.tconst)
+                rating_object = (f"Average Rating: {rating.averageRating}",f"Number of Votes: {rating.numVotes}" )
+            except Ratings.DoesNotExist:
+                rating = None
+                rating_object = None
+
+            try:
+                akas = Akas.objects.filter(titleId=title.tconst)
+                akas_titles = [(f"title: {entry.title}", f"region: {entry.region}") for entry in akas]
+
+            except Akas.DoesNotExist:
+                akas = None
+                akas_titles = None
+            
+            try:
+                # Assuming you've already fetched 'principal' as you've shown:
+                principal = Principals.objects.filter(tconst=title.tconst)
+
+        # For each principal, fetch the corresponding person from the Names table and create tuples
+                principal_id_and_name = []
+                for x in principal:
+                    try:
+                        name_entry = Names.objects.get(nconst=x.nconst)
+                        principal_id_and_name.append(( f"nameId: {x.nconst}" ,f"primary person: {name_entry.primaryName}"  ,f"category: {x.category}"))
+                    except Names.DoesNotExist:
+                # Handle the case where no corresponding entry in Names exists
+                        name_entry = None
+                        principal_id_and_name.append((x.nconst, x.category, None))
+
+        # Now, principal_id_and_name contains tuples of (nconst, category, primaryName) for each matching entry
+
+            except Principals.DoesNotExist:
+                principal = None
+            
+            if title.img_url_asset == None :
+                full_url = None
+            else:
+                baseurl = title.img_url_asset
+                width = "w220_and_h330_face"
+                full_url = baseurl.replace("{width_variable}", width)
+    
+
+            titleObject = {
+                'title': title.primaryTitle,  # Use primaryTitle for the 'title' field
+                'titleID': title.tconst,
+                'primaryTitle': title.primaryTitle,
+                'type': title.titleType,
+                'originalTitle': title.originalTitle,  # This is the original title part
+                'titlePoster': full_url,
+                'startYear': title.startYear,
+                'endYear': title.endYear,
+                'genres': title.genres.split(",") if title.genres else [],
+                'titleAkas': akas_titles,
+                'principals': principal_id_and_name,
+                # 'rating': rating,
+                'rating_object': rating_object
+            }
+            titles_list.append(titleObject)
+    return JsonResponse({'movies': titles_list})
 
 def title_details(request, tconst):
   try:  

@@ -23,7 +23,12 @@ urlpatterns = [
     path("upload/title_ratings",views.upload_ratings, name='upload ratings'),
     path("upload/healthcheck", views.healthcheck, name='health check'),
     
-    path("searchtitle", views.search_titles, name='search_title'),
-    path("searchname",views.search_names, name='search_name'),
-    path("bygenre",views.bygenre, name='bygenre')
+    path("searchtitle/html", views.search_titles, name='search_title'),
+    path("searchtitle", views.search_titles_json, name='search_title_json'),
+
+    path("searchname/html",views.search_names, name='search_name'),
+    path("searchname",views.search_names_json, name='search_name_json'),
+    
+    path("bygenre/html",views.bygenre, name='bygenre_html'),
+    path("bygenre",views.bygenre_json, name="bygenre_json")
 ]
