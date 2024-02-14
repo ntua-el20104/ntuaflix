@@ -45,49 +45,14 @@
             text-decoration: underline;
         }
 
-        .search-section {
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .search-box {
-            width: 40%;
-            padding: 10px;
-            border: 2px solid #333;
-            border-radius: 5px;
-        }
-
-        .filter-dropdown {
-            padding: 10px;
-            border: 2px solid #333;
-            border-radius: 5px;
-            margin-left: 10px;
-        }
-
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #ff9c2a;
-            color: white;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        button:hover {
-            background-color: #e68a00;
-        }
-
         .section {
             background: white;
             border-radius: 5px;
             padding: 20px;
             margin: 20px auto;
-            /* Centering the sections */
-            max-width: 800px;
-            /* Setting a max-width for larger screens */
+            max-width: 600px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            text-align: center;
         }
 
         .section h2 {
@@ -95,34 +60,82 @@
             margin-bottom: 20px;
         }
 
-        body,
-        html {
-            height: 100%;
-            /* Ensure the full height of the page is used */
-            margin: 0;
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: center;
         }
 
-        .content {
-            padding-bottom: 60px;
-            /* Adjust this value based on the footer's height to ensure content doesn't get hidden behind the footer */
+        li {
+            display: flex;
+            align-items: center;
+            /* This centers items vertically */
+            justify-content: center;
+            /* This centers items horizontally */
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            /* This will center the text for inline or inline-block elements inside the li, but for flex items, justify-content and align-items are more effective */
+            flex-direction: column;
+            /* This stacks flex items vertically */
+        }
+
+        li img {
+            width: 80px;
+            height: auto;
+            margin-right: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        li a {
+            color: #E53935;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+
+        li a:hover {
+            color: #B71C1C;
+            text-decoration: underline;
         }
 
         footer {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
             background: #202020;
             color: white;
             text-align: center;
             padding: 10px 0;
+            margin-top: 20px;
         }
 
         footer p {
             margin: 0;
             padding: 0;
         }
+
+        @media (max-width: 768px) {
+
+            .search-section,
+            .search-box,
+            .filter-dropdown,
+            button {
+                width: 90%;
+                margin: 5px auto;
+            }
+
+            nav a {
+                font-size: 14px;
+                margin: 0 5px;
+            }
+        }
     </style>
+
+
+
+
 </head>
 
 <body>
@@ -135,17 +148,19 @@
         <a href="/ntuaflix_api/upload">Upload</a>
         <a href="/ntuaflix_api/bygenre/html">By Genre</a>
     </nav>
-    <div class="section preferences-section">
-        <h2>User Preferences</h2>
-        <!-- Dynamic content based on user preferences -->
-    </div>
-    <div class="section recommendations-section">
-        <h2>Recommendations for You</h2>
-        <ul>
-            {% for title in titles %}
-                <li><a href="/ntuaflix_api/title/{{ title.0 }}/html">{{ title.1 }}</a></li> 
-            {% endfor %}
-        </ul>
+    <div class="main-container">
+        <div class="section preferences-section">
+            <h2>User Preferences</h2>
+            <!-- Dynamic content based on user preferences -->
+        </div>
+        <div class="section recommendations-section">
+            <h2>Recommendations for You</h2>
+            <ul>
+                {% for title in titles %}
+                <li><a href="/ntuaflix_api/title/{{ title.0 }}/html">{{ title.1 }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
     <footer>
         <p>© 2024 Ntuaflix</p>
