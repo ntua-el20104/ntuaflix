@@ -85,7 +85,7 @@
         }
 
         button:hover {
-            background-color: #B71C1C;
+            background-color: #ec524f;
         }
     
         ul {
@@ -182,7 +182,7 @@
 <ul class="movie-list">
   {% for x in titles %}
   <li>
-      <button onclick="location.href='title/{{ x.tconst }}/html'">{{ x.primaryTitle }}</button>
+    <button onclick="location.href='/ntuaflix_api/title/{{ x.tconst }}/html'">{{ x.primaryTitle }}</button>
   </li>
   {% endfor %}
 </ul>
