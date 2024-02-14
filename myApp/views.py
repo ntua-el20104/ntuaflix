@@ -11,11 +11,28 @@ from .forms import *
 from .models import *
 from django.db import connections
 from django.db.utils import OperationalError
+from django.db.models import F, FloatField
+from django.db.models.functions import Cast
 
 
 def home(request):
-    template = loader.get_template('home.html')
-    return HttpResponse(template.render())
+    # If averageRating is still a CharField, convert it to float for ordering
+    top_ratings = Ratings.objects.annotate(
+        numeric_rating=Cast('averageRating', FloatField())
+    ).order_by('-numeric_rating')[:10]
+
+    # Assuming Movies and Ratings share the same 'tconst' for identification
+    movies = Movies.objects.filter(tconst__in=[rating.tconst for rating in top_ratings])
+    titles = []
+
+    for movie in movies:
+         titles.append((movie.tconst,movie.primaryTitle))
+    # Preparing context data for template
+    context = {
+        'titles': titles,
+    }
+
+    return render(request, 'home.html', context)
 
 def login(request):
     template = loader.get_template('login.html')

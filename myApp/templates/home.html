@@ -141,14 +141,12 @@
     </div>
     <div class="section recommendations-section">
         <h2>Recommendations for You</h2>
-        <!-- Dynamic content based on user behavior or ratings -->
+        <ul>
+            {% for title in titles %}
+                <li><a href="/ntuaflix_api/title/{{ title.0 }}/html">{{ title.1 }}</a></li> 
+            {% endfor %}
+        </ul>
     </div>
-    <script>
-        // Placeholder for search functionality
-        function performSearch() {
-            alert('Search functionality not implemented.');
-        }
-    </script>
     <footer>
         <p>© 2024 Ntuaflix</p>
     </footer>
