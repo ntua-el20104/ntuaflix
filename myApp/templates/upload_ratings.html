@@ -8,15 +8,15 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background: url('https://png.pngtree.com/thumb_back/fh260/background/20230703/pngtree-3d-rendered-movie-theatre-with-white-screen-image_3732826.jpg') no-repeat center center fixed; 
+            background: url('https://png.pngtree.com/thumb_back/fh260/background/20230703/pngtree-3d-rendered-movie-theatre-with-white-screen-image_3732826.jpg') no-repeat center center fixed;
             background-size: cover;
             color: #333;
             line-height: 1.6;
-            text-align: center;
         }
 
-        header {
-            background-color: black; /* A modern shade of blue */
+        header,
+        .footer {
+            background-color: black;
             color: white;
             padding: 20px 0;
             text-align: center;
@@ -29,7 +29,7 @@
             justify-content: center;
             align-items: center;
         }
-    
+
         nav a {
             color: white;
             margin: 0 20px;
@@ -37,9 +37,26 @@
             font-size: 1.2em;
             transition: color 0.3s ease-out;
         }
-    
+
         nav a:hover {
-            color: #E53935; /* A shade of red for interactivity */
+            color: #E53935;
+            /* A shade of red for interactivity */
+            text-decoration: underline;
+        }
+
+        ul li a,
+        .footer a {
+            color: #E53935;
+            /* Red color for all links */
+            text-decoration: none;
+            font-size: 1.2em;
+            transition: color 0.3s ease-out;
+        }
+
+        ul li a:hover,
+        .footer a:hover {
+            color: #B71C1C;
+            /* Darker red on hover */
             text-decoration: underline;
         }
 
@@ -56,30 +73,25 @@
             margin: 20px auto;
         }
 
-        .search-box {
+        .search-box,
+        .filter-dropdown {
             flex-grow: 1;
-            margin-right: 10px;
             padding: 15px;
             border: 2px solid #333;
             border-radius: 5px;
             font-size: 1.2em;
+            margin-right: 10px;
         }
 
         .filter-dropdown {
-            padding: 15px;
-            border: 2px solid #333;
-            border-radius: 5px;
             margin-left: 10px;
-            background: white;
-            color: #333;
-            font-size: 1.2em; /* Matching font size with search box */
         }
 
         button {
             padding: 15px 25px;
             border: none;
             border-radius: 5px;
-            background-color: #E53935; /* Changed to red shade */
+            background-color: #E53935;
             color: white;
             font-size: 1.2em;
             cursor: pointer;
@@ -87,7 +99,7 @@
         }
 
         button:hover {
-            background-color: #B71C1C; /* Darker shade for hover */
+            background-color: #B71C1C;
         }
 
         ul {
@@ -101,43 +113,84 @@
         }
 
         li {
-            background: #f9f9f9; /* Very light grey background */
+            background: #f9f9f9;
             border-radius: 5px;
             padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
             transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
         }
 
         li:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
-        li button {
-            background-color: transparent;
-            color: #2a2929;
-            border: none;
-            padding: 0;
-            font-size: 1em;
-            cursor: pointer;
-            font-weight: bold; /* Make names bold */
+        li a {
+            display: block;
+            color: #E53935;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        li button:hover {
-            text-decoration: underline;
-        }   
-    
+        html {
+            position: relative;
+            min-height: 100%;
+        }
+
+        body {
+            text-align: center;
+            padding-bottom: 60px;
+        }
+
         footer {
-            background-color: black; /* Matched with header */
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: black;
             color: white;
             text-align: center;
             padding: 10px 0;
         }
-    
+
+        footer a {
+            color: #E53935;
+            /* Red color for all link states */
+            text-decoration: none;
+            font-size: 1.2em;
+            transition: color 0.3s ease-out;
+        }
+
+
+        .content {
+            padding-bottom: 100px;
+            /* Adjust this value based on the footer's height to ensure content doesn't get hidden behind the footer */
+        }
+
         footer p {
             margin: 0;
             padding: 0;
+        }
+
+        @media (max-width: 768px) {
+            .search-section form {
+                flex-direction: column;
+            }
+
+            .search-box,
+            .filter-dropdown,
+            button {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            nav a {
+                font-size: 14px;
+                margin: 0 10px;
+            }
         }
     </style>
 </head>
@@ -163,5 +216,11 @@
         {{ form.as_p }}
         <button type="submit">Upload File</button>
     </form>
+
+    <footer>
+        <p>Back to <a href="/ntuaflix_api">Home</a></p>
+        <p>© 2024 Ntuaflix</p>
+    </footer>
+
 </body>
 </html>
