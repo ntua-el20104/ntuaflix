@@ -5,105 +5,141 @@
     <title>Upload Data</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f0f0f0;
+            background: url('https://png.pngtree.com/thumb_back/fh260/background/20230703/pngtree-3d-rendered-movie-theatre-with-white-screen-image_3732826.jpg') no-repeat center center fixed; 
+            background-size: cover;
             color: #333;
+            line-height: 1.6;
         }
 
-        header {
-            background-color: #000000;
+        header, .footer {
+            background-color: black; /* A modern shade of blue */
             color: white;
-            text-align: center;
             padding: 20px 0;
+            text-align: center;
         }
 
         nav {
-            background-color: #202020;
+            background-color: #1a1a1a;
             padding: 10px 0;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
+    
         nav a {
             color: white;
             margin: 0 20px;
             text-decoration: none;
             font-size: 1.2em;
+            transition: color 0.3s ease-out;
         }
-
+    
         nav a:hover {
-            color: #f0f0f0;
+            color: #E53935; /* A shade of red for interactivity */
             text-decoration: underline;
         }
 
-        h1 {
-            color: #444;
-            text-align: center;
-            padding: 20px 0;
+        .search-section {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .search-section form {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            margin: 20px auto;
+        }
+
+        .search-box {
+            flex-grow: 1;
+            margin-right: 10px;
+            padding: 15px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            font-size: 1.2em;
+        }
+
+        .filter-dropdown {
+            padding: 15px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            margin-left: 10px;
+            background: white;
+            color: #333;
+            font-size: 1.2em; /* Matching font size with search box */
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 5px;
+            background-color: #E53935; /* Changed to red shade */
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease-out;
+        }
+
+        button:hover {
+            background-color: #B71C1C; /* Darker shade for hover */
         }
 
         ul {
             list-style-type: none;
-            margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 800px;
+            margin: 20px auto;
         }
 
-        ul li {
-            background-color: #fff;
-            margin: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        li {
+            background: #f9f9f9; /* Very light grey background */
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
         }
 
-        ul li a {
-            display: block;
-            color: #ff9c2a;
-            padding: 20px 60px;
-            text-decoration: none;
-            font-size: 16px;
+        li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
 
-        ul li a:hover {
-            background-color: #f2f2f2;
+        li button {
+            background-color: transparent;
+            color: #2a2929;
+            border: none;
+            padding: 0;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold; /* Make names bold */
         }
 
-        .footer {
-            background-color: #202020;
+        li button:hover {
+            text-decoration: underline;
+        }   
+    
+        footer {
+            background-color: black; /* Matched with header */
             color: white;
             text-align: center;
             padding: 10px 0;
         }
-
-        .footer a {
-            color: white;
-            text-decoration: none;
+    
+        footer p {
+            margin: 0;
+            padding: 0;
         }
 
-        .footer a:hover {
-            text-decoration: underline;
-        }
 
-        @media (max-width: 768px) {
-            nav a {
-                float: none;
-                display: block;
-                text-align: center;
-            }
-
-            ul {
-                flex-direction: column;
-            }
-
-            ul li a {
-                padding: 20px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -120,7 +156,6 @@
 </nav>
 
 <div>
-    <h1>Data Upload</h1>
     <ul>
         <li><a href="/ntuaflix_api/upload/title_basics">Upload Title Basics</a></li>
         <li><a href="/ntuaflix_api/upload/name_basics">Upload Name Basics</a></li>
