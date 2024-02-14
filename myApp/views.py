@@ -194,7 +194,6 @@ def search_names_json(request):
         return JsonResponse({'names': names_list}, status=204) 
     return JsonResponse({'names': names_list}, status=200)
 
-
 def name_details(request, nconst):
   person = Names.objects.get(nconst=nconst)
   template2 = loader.get_template('my_custom_filters.py')
@@ -508,7 +507,6 @@ def title_details_json(request, tconst):
     return JsonResponse(titleObject)
   except Movies.DoesNotExist:
         return JsonResponse({'error': 'Movie not found'}, status=404)
-
 
 def upload(request):
     template = loader.get_template('upload.html')
