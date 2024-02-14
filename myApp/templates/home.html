@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,10 +8,13 @@
     <title>Ntuaflix</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f0f0f0;
+            background: url('https://png.pngtree.com/thumb_back/fh260/background/20230703/pngtree-3d-rendered-movie-theatre-with-white-screen-image_3732826.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            line-height: 1.6;
         }
 
         header {
@@ -21,7 +25,7 @@
         }
 
         nav {
-            background: #202020;
+            background-color: #1a1a1a;
             padding: 10px 0;
             display: flex;
             justify-content: center;
@@ -33,10 +37,11 @@
             margin: 0 20px;
             text-decoration: none;
             font-size: 1.2em;
+            transition: color 0.3s ease-out;
         }
 
         nav a:hover {
-            color: #f0f0f0;
+            color: #E53935;
             text-decoration: underline;
         }
 
@@ -78,9 +83,11 @@
             background: white;
             border-radius: 5px;
             padding: 20px;
-            margin: 20px auto; /* Centering the sections */
-            max-width: 800px; /* Setting a max-width for larger screens */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin: 20px auto;
+            /* Centering the sections */
+            max-width: 800px;
+            /* Setting a max-width for larger screens */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .section h2 {
@@ -88,13 +95,27 @@
             margin-bottom: 20px;
         }
 
+        body,
+        html {
+            height: 100%;
+            /* Ensure the full height of the page is used */
+            margin: 0;
+        }
+
+        .content {
+            padding-bottom: 60px;
+            /* Adjust this value based on the footer's height to ensure content doesn't get hidden behind the footer */
+        }
+
         footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
             background: #202020;
             color: white;
             text-align: center;
             padding: 10px 0;
-            margin-top: 20px; /* Add a bit of space before the footer */
-            width: 100%;
         }
 
         footer p {
@@ -103,6 +124,7 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <h1>Ntuaflix</h1>
@@ -113,16 +135,6 @@
         <a href="/ntuaflix_api/upload">Upload</a>
         <a href="/ntuaflix_api/bygenre/html">By Genre</a>
     </nav>
-    <div class="search-section">
-        <input type="text" class="search-box" placeholder="Search movies, TV shows, celebrities...">
-        <select class="filter-dropdown">
-            <option value="">All</option>
-            <option value="movies">Moviess</option>
-            <option value="tvshows">TV Shows</option>
-            <option value="celebrities">Celebrities</option>
-        </select>
-        <button onclick="performSearch()">Search</button>
-    </div>
     <div class="section preferences-section">
         <h2>User Preferences</h2>
         <!-- Dynamic content based on user preferences -->
@@ -131,14 +143,15 @@
         <h2>Recommendations for You</h2>
         <!-- Dynamic content based on user behavior or ratings -->
     </div>
-    <footer>
-        <p>© 2024 Ntuaflix</p>
-    </footer>
     <script>
         // Placeholder for search functionality
         function performSearch() {
             alert('Search functionality not implemented.');
         }
     </script>
+    <footer>
+        <p>© 2024 Ntuaflix</p>
+    </footer>
 </body>
+
 </html>
