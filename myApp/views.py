@@ -535,7 +535,7 @@ def upload(request):
 
 # @csrf_exempt  # Disable CSRF token for simplicity, consider CSRF protection for production
 @require_http_methods(["GET","POST"])
-def upload_title_basics(request):
+def upload_title_basics(request, file):
     success_count = 0
     error_count = 0
     form = UploadFileForm()
@@ -850,6 +850,7 @@ def upload_ratings(request):
             return HttpResponse(message)
 
     return render(request, 'upload_ratings.html', {'form': form})
+
 def healthcheck(request):
     db_conn = connections['default']
     try:
@@ -873,6 +874,16 @@ def healthcheck_json(request):
     except OperationalError:
         connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
         return JsonResponse({"status": "failed", "dataconnection": connection_string})
+
+def resetall():
+        # Delete data from Movies model
+        Movies.objects.all().delete()
+        Names.objects.all().delete()
+        Crews.objects.all().delete()
+        Episode.objects.all().delete()
+        Ratings.objects.all().delete()
+        Principals.objects.all().delete()
+        Akas.objects.all().delete()
 
 @csrf_exempt  # Disable CSRF token for this example. Use cautiously.
 @require_http_methods(["POST"])  # Ensure that only POST requests are accepted.
