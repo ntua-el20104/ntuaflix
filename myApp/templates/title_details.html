@@ -8,7 +8,8 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f0f0f0;
+            background: url('https://png.pngtree.com/thumb_back/fh260/background/20230703/pngtree-3d-rendered-movie-theatre-with-white-screen-image_3732826.jpg') no-repeat center center fixed; 
+            background-size: cover;
             color: #333;
         }
 
@@ -19,11 +20,34 @@
             padding: 20px 0;
         }
 
+        nav {
+            background-color: #333;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease-out;
+        }
+    
+        nav a:hover {
+            color: #A5D6A7;
+        }
+
         .container {
             display: flex;
             justify-content: center;
-            padding: 20px;
+            align-items: flex-start;
+            padding: 40px 15px;
             flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .movie-content, .movie-sidebar {
@@ -35,8 +59,9 @@
         }
 
         .movie-sidebar {
-            flex: 1;
+            flex: 1 0 200px;
             max-width: 30%;
+            max-height: fit-content;
         }
 
         .movie-content {
@@ -50,9 +75,13 @@
             max-width: 400px;
         }
 
-        h1, h2 {
-            color: #444;
+        h1 {
+            color:#fff;
             margin-top: 0;
+        }
+         h2 {
+            color: #444;
+            margin-top: 20px;
         }
 
         .movie-details p, .footer p, dd, dt {
@@ -88,8 +117,8 @@
 
         .rating-section {
             background-color: #fff;
-            padding: 20px;
-            margin-top: 20px;
+            padding: 15px;
+            margin-top: 10px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
@@ -127,6 +156,13 @@
     <h1>Title Details</h1>
 </header>
 
+<nav>
+    <a href="/ntuaflix_api/title">Movies</a>
+    <a href="/ntuaflix_api/name">Names</a>
+    <a href="/ntuaflix_api/upload">Upload</a>
+    <a href="/ntuaflix_api/bygenre/html">By Genre</a>
+</nav>
+
 <div class="container">
     <div class="movie-sidebar">
         {% if titlePoster %}
@@ -138,26 +174,27 @@
         {% endif %}
     </div>
     <div class="movie-content">
-        <h1>{{ primaryTitle }} ({{ startYear }})</h1>
+        <h2>{{ primaryTitle }} ({{ startYear }})</h2>
         <div class="movie-details">
             <p><strong>Type:</strong> {{ type }}</p>
             <p><strong>Original Title:</strong> {{ originalTitle }}</p>
             <p><strong>Genre:</strong> {{ genres }}</p>
             <p><strong>End Year:</strong> {{ endYear }}</p>
-            {% if titleAkas %}
-                <h2>Title Akas</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Region</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Title Akas rows here -->
-                    </tbody>
-                </table>
+            
+            {% if rating_object %}
+                <div class="rating-section">
+                    <h2>Rating Details</h2>
+                    <dl>
+                        <dt>Average Rating:</dt>
+                        <dd>{{ rating.averageRating }} / 10</dd>
+                        <dt>Number of Votes:</dt>
+                        <dd>{{ rating.numVotes }}</dd>
+                    </dl>
+                </div>
+            {% else %}
+                <p>There are no available ratings for this title.</p>
             {% endif %}
+
             {% if principals %}
                 <h2>Principals</h2>
                 <table>
@@ -177,18 +214,27 @@
                     </tbody>
                 </table>
             {% endif %}
-            {% if rating_object %}
-                <div class="rating-section">
-                    <h2>Rating Details</h2>
-                    <dl>
-                        <dt>Average Rating:</dt>
-                        <dd>{{ rating.averageRating }} / 10</dd>
-                        <dt>Number of Votes:</dt>
-                        <dd>{{ rating.numVotes }}</dd>
-                    </dl>
-                </div>
-            {% else %}
-                <p>There are no available ratings for this title.</p>
+
+
+            
+            {% if titleAkas %}
+                <h2>Title Akas</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Region</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aka in titleAkas %}
+                        <tr>
+                            <td>{{ aka.0 }}</td>
+                            <td>{{ aka.1 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% endif %}
         </div>
     </div>
@@ -200,3 +246,4 @@
 
 </body>
 </html>
+

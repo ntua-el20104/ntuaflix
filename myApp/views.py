@@ -374,7 +374,8 @@ def title_details(request, tconst):
 
     try:
         akas = Akas.objects.filter(titleId=tconst)
-        akas_titles = [(f"title: {entry.title}", f"region: {entry.region}") for entry in akas]
+        akas_titles = [(entry.title,entry.region,entry.titleId) for entry in akas]
+        print(akas_titles)
 
     except Akas.DoesNotExist:
         akas = None
