@@ -155,8 +155,8 @@
         <a href="/ntuaflix_api/bygenre/html">By Genre</a>
     </nav>
 <body>
-    <h1>Upload TSV File for Title Akas</h1>
-    <p>Select a TSV file to upload, then click "Upload File".</p>
+    <h1>Health Check</h1>
+    <p>Perform a Health Check for connection to the database</p>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}

@@ -845,6 +845,18 @@ def healthcheck(request):
         connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
         return JsonResponse({"status": "failed", "dataconnection": connection_string})
 
+def healthcheck_json(request):
+    db_conn = connections['default']
+    try:
+        db_conn.cursor()
+        # Εδώ μπορείτε να προσθέσετε οποιοδήποτε άλλο test θεωρείτε απαραίτητο
+        # για να επιβεβαιώσετε τη συνδεσιμότητα με τη βάση δεδομένων ή με ένα API.
+        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+        return JsonResponse({"status": "OK", "dataconnection": connection_string})
+    except OperationalError:
+        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+        return JsonResponse({"status": "failed", "dataconnection": connection_string})
+
 @csrf_exempt  # Disable CSRF token for this example. Use cautiously.
 @require_http_methods(["POST"])  # Ensure that only POST requests are accepted.
 def user_endpoint_view(request):
