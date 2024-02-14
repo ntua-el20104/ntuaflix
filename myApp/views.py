@@ -203,7 +203,10 @@ def name_details(request, nconst):
         nameTitles = []
         for x in personTitles:
             movie = Movies.objects.get(tconst=x.tconst)  # Get the corresponding movie
-            nameTitles.append(movie.primaryTitle)  # Append title as string
+            nameTitles.append((movie.tconst,movie.primaryTitle))
+            for title in nameTitles:
+                print(title[0])
+            print(nameTitles)  # Append title as string
   except Movies.DoesNotExist:
         nameTitles = []
 
@@ -419,7 +422,7 @@ def title_details(request, tconst):
         'titlePoster': full_url,
         'startYear': title.startYear,
         'endYear':title.endYear,
-        'genres': title.genres.split(","),
+        'genres': title.genres,
         'titleAkas':akas_titles,
         'principals': principal_id_and_name,
         'rating':rating,
