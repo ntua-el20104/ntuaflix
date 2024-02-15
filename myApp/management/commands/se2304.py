@@ -808,13 +808,13 @@ class Command(BaseCommand):
             db_conn.cursor()
             db_status = "OK"
         except OperationalError:
-            db_status = "Failed"
+            db_status = "failed"
         
         # Assuming 'connection_name' is a placeholder for your actual connection string's reference or identifier
         connection_name = "Server = http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3;"  # Be cautious with sensitive info
         if db_status == "OK":
             response = {"status": "OK", "dataconnection": connection_name}
         else:
-            response = {"status": "Failed", "dataconnection": connection_name}
+            response = {"status": "failed", "dataconnection": connection_name}
         print(response)
         #return JsonResponse(response)
