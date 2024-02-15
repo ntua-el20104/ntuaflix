@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-import json
+import json, sqlite3
+from contextlib import contextmanager
 from django.db import connections
 from django.db.utils import OperationalError
 from myApp.models import *
@@ -9,10 +10,21 @@ from myApp.models import *
 from django.core.exceptions import ValidationError
 import csv
 import requests 
-import subprocess
 import os
 from django.contrib.auth import authenticate
-from django.http import JsonResponse
+import jwt
+from datetime import datetime, timedelta
+from django.conf import settings
+
+def create_jwt_token(data):
+    """Create a JWT token with provided data."""
+    payload = data.copy()
+    # Set the expiration time for the token (e.g., 24 hours from now)
+    payload['exp'] = datetime.utcnow() + timedelta(days=1)
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+    return token
+
+DATABASE_PATH = 'db.sqlite3'
 
 class Command(BaseCommand):
     help = 'Custom Command for our WebApp (Gamo Tin Patra)'
@@ -769,7 +781,7 @@ class Command(BaseCommand):
         os.system("python manage.py se2304 newratings --filename truncated_title.ratings.tsv")
         
     def login_user(self, options):
-
+        
         # Assuming you're receiving 'username' and 'password' as POST parameters
         username = options['username']
         password = options['password']
@@ -779,11 +791,10 @@ class Command(BaseCommand):
         
         if user is not None:
             # User is authenticated
+            token = create_jwt_token({"username" : username, "password" : password})
             mydata = {
-                'username': username,
-                'password': password,
+                'token' : token
             }
-
 
             # Define the URL to which you want to make the POST request
             post_url = 'http://127.0.0.1:9876/ntuaflix_api/application/x-www-form-urlencoded'  # Change this to your actual endpoint URL
@@ -794,7 +805,8 @@ class Command(BaseCommand):
             
             # Check response status (optional)
             if response.status_code == 200:
-                print("Data successfully posted.")
+                print("Data successfully posted")
+                print(mydata)
             else:
                 print("Failed to post data. Status code:", response.status_code)
         else:
@@ -804,6 +816,7 @@ class Command(BaseCommand):
     def health_check(self):
         # Example of checking database connectivity
         db_conn = connections['default']
+
         try:
             db_conn.cursor()
             db_status = "OK"

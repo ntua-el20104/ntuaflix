@@ -15,7 +15,9 @@ from django.db.models import F, FloatField
 from django.db.models.functions import Cast
 import os
 from django.conf import settings
-
+import jwt
+from django.contrib.auth import authenticate
+from datetime import datetime, timedelta
 
 
 def home(request):
@@ -1317,3 +1319,34 @@ def user_endpoint_view(request):
     except KeyError:
         # Handle missing keys if necessary
         return HttpResponseBadRequest('Missing required data')
+    
+@csrf_exempt
+def login(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
+            
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                # Assuming `is_admin` and `dob` are attributes of your user model
+                token_data =  user.username,
+                token = create_jwt_token(token_data)
+                return JsonResponse({'token': token})
+            else:
+                return HttpResponse('Invalid Credentials', status=401)
+        except Exception as e:
+            return HttpResponse(str(e), status=400)
+    else:
+        return HttpResponse('Method not allowed', status=405)
+
+
+
+def create_jwt_token(data):
+    """Create a JWT token with provided data."""
+    payload = data.copy()
+    # Set the expiration time for the token (e.g., 24 hours from now)
+    payload['exp'] = datetime.utcnow() + timedelta(days=1)
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+    return token
