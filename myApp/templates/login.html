@@ -1,88 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Your Movie Database</title>
+    <title>Login</title>
     <style>
-        /* Add your CSS styling here */
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
+            padding: 0;
+            background: url('https://png.pngtree.com/thumb_back/fh260/background/20230703/pngtree-3d-rendered-movie-theatre-with-white-screen-image_3732826.jpg') no-repeat center center fixed; 
+            background-size: cover;
+            color: #333;
+            line-height: 1.6;
         }
-        .login-container {
-            width: 300px;
-            padding: 20px;
-            border: 1px solid #ccc;
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 150px; /* Αυξάνουμε το padding-top για να κατέβει η φόρμα πιο κάτω */
+        }
+        label, input {
+            margin: 10px;
+        }
+        input {
+            background-color: #808080; /* Γκρι φόντο στα input fields */
+            color: #fff; /* Λευκό κείμενο */
+            border: 1px solid #333; /* Σκούρο γκρι περίγραμμα */
+        }
+        input::placeholder {
+            color: #ccc; /* Ανοιχτότερο γκρι για το placeholder κείμενο */
+        }
+        button {
+            padding: 15px 25px;
+            border: none;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .login-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .form-control {
-            margin-bottom: 10px;
-        }
-        .form-control label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .form-control input {
-            width: calc(100% - 22px);
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .form-control input[type="submit"] {
-            background-color: #5cb85c;
+            background-color: #E53935; /* Changed to red shade */
             color: white;
+            font-size: 1.2em;
             cursor: pointer;
+            transition: background-color 0.3s ease-out;
         }
-        .form-control input[type="submit"]:hover {
-            background-color: #4cae4c;
-        }
-        .register-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
+        button:hover {
+            background-color: #B71C1C; /* Darker shade for hover */
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login to Your Account</h2>
-        <form onsubmit="handleLogin(event)">
-            <div class="form-control">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="form-control">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <div class="form-control">
-                <input type="submit" value="Login">
-            </div>
-        </form>
-        <a href="signup.html" class="register-link">Don't have an account? Register here.</a>
-    </div>
-    <script>
-        // JavaScript function to handle form submission
-        function handleLogin(event) {
-            event.preventDefault(); // Prevent the default form submission
 
-            // TODO: Add form validation and authentication here
+<form action=" " method="post">
+    {% csrf_token %}
+    <div style="height: 50px;"></div> <!-- Δημιουργούμε έναν κενό χώρο πριν το πεδίο username -->
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password">
+    <button type="submit">Login</button>
+</form>
 
-            // If login is successful, redirect to the homepage
-            window.location.href = 'homepage.html'; // Update 'homepage.html' to the path of your actual homepage
-        }
-    </script>
 </body>
 </html>
-

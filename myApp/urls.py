@@ -34,4 +34,5 @@ urlpatterns = [
     path("bygenre",views.bygenre_json, name="bygenre_json"),
 
     path('application/x-www-form-urlencoded', views.user_endpoint_view, name='user-endpoint')
+    
 ]
