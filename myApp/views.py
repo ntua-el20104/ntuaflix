@@ -13,6 +13,9 @@ from django.db import connections
 from django.db.utils import OperationalError
 from django.db.models import F, FloatField
 from django.db.models.functions import Cast
+import os
+from django.conf import settings
+
 
 
 def home(request):
@@ -535,7 +538,7 @@ def upload(request):
 
 # @csrf_exempt  # Disable CSRF token for simplicity, consider CSRF protection for production
 @require_http_methods(["GET","POST"])
-def upload_title_basics(request, file):
+def upload_title_basics(request):
     success_count = 0
     error_count = 0
     form = UploadFileForm()
@@ -855,13 +858,12 @@ def healthcheck(request):
     db_conn = connections['default']
     try:
         db_conn.cursor()
-        # Εδώ μπορείτε να προσθέσετε οποιοδήποτε άλλο test θεωρείτε απαραίτητο
-        # για να επιβεβαιώσετε τη συνδεσιμότητα με τη βάση δεδομένων ή με ένα API.
-        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
-        return JsonResponse({"status": "OK", "dataconnection": connection_string})
+        # Additional checks can be added here
+        connection_string = "Server=http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+        return render(request, 'healthcheck.html', {"status": "OK", "dataconnection": connection_string})
     except OperationalError:
-        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
-        return JsonResponse({"status": "failed", "dataconnection": connection_string})
+        connection_string = "Server=http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+        return render(request, 'healthcheck.html', {"status": "Failed", "dataconnection": connection_string})
 
 def healthcheck_json(request):
     db_conn = connections['default']
@@ -875,15 +877,381 @@ def healthcheck_json(request):
         connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
         return JsonResponse({"status": "failed", "dataconnection": connection_string})
 
-def resetall():
-        # Delete data from Movies model
-        Movies.objects.all().delete()
-        Names.objects.all().delete()
-        Crews.objects.all().delete()
-        Episode.objects.all().delete()
-        Ratings.objects.all().delete()
-        Principals.objects.all().delete()
-        Akas.objects.all().delete()
+@require_http_methods(["GET"])
+def reset_title_basics(request, file_path):
+    success_count = 0
+    error_count = 0
+    
+    # Handling file from a given file path (for automated reset and repopulation)
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter='\t')
+            for row in reader:
+                try:
+                    # Extracting data from each row
+                    tconst = row['tconst']
+                    titleType = row['titleType']
+                    primaryTitle = row['primaryTitle']
+                    originalTitle = row['originalTitle']
+                    isAdult = row['isAdult']
+                    startYear = row['startYear'] if row['startYear'] != '\\N' else None
+                    endYear = row['endYear'] if row['endYear'] != '\\N' else None
+                    runtimeMinutes = row['runtimeMinutes'] if row['runtimeMinutes'] != '\\N' else None
+                    genres = row['genres'] if row['genres'] != '\\N' else None
+                    img_url_asset = row.get('img_url_asset', None)  # Assuming 'None' for missing img_url_asset
+                    
+                    # Creating or updating the Movies entry
+                    Movies.objects.update_or_create(
+                        tconst=tconst,
+                        defaults={
+                            'titleType': titleType,
+                            'primaryTitle': primaryTitle,
+                            'originalTitle': originalTitle,
+                            'isAdult': isAdult == '1',
+                            'startYear': int(startYear) if startYear else None,
+                            'endYear': int(endYear) if endYear else None,
+                            'runtimeMinutes': int(runtimeMinutes) if runtimeMinutes else None,
+                            'genres': genres,
+                            'img_url_asset': img_url_asset,
+                        }
+                    )
+                    success_count += 1
+                except Exception as e:
+                    error_count += 1
+                    print(f"Error processing row: {e}")  # Optionally log the error
+
+        message = f"Title Basics reset successfully. Created/Updated: {success_count}, Errors: {error_count}."
+    except FileNotFoundError:
+        message = "File not found."
+    except Exception as e:
+        message = f"Error processing file: {e}"
+    
+    return HttpResponse(message)
+
+@require_http_methods(["GET"])
+def reset_name_basics(request, file_path):
+    success_count = 0
+    error_count = 0
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter='\t')
+            for row in reader:
+                try:
+                    # Extracting data from each row
+                    nconst = row['nconst']
+                    primaryName = row['primaryName']
+                    birthYear = row['birthYear'] if row['birthYear'] != '\\N' else None
+                    deathYear = row['deathYear'] if row['deathYear'] != '\\N' else None
+                    primaryProfession = row['primaryProfession'] if row['primaryProfession'] != '\\N' else None
+                    knownForTitles = row['knownForTitles'] if row['knownForTitles'] != '\\N' else None
+                    img_url_asset = row.get('img_url_asset', None)
+                    
+                    # Creating or updating the Names entry
+                    Names.objects.update_or_create(
+                        nconst=nconst,
+                        defaults={
+                            'primaryName': primaryName,
+                            'birthYear': birthYear,
+                            'deathYear': deathYear,
+                            'primaryProfession': primaryProfession,
+                            'knownForTitles': knownForTitles,
+                            'img_url_asset': img_url_asset,
+                        }
+                    )
+                    success_count += 1
+                except Exception as e:
+                    error_count += 1
+                    print(f"Error processing row: {e}")
+
+        message = f"Name Basics reset successfully. Created/Updated: {success_count}, Errors: {error_count}."
+    except FileNotFoundError:
+        message = "File not found."
+    except Exception as e:
+        message = f"Error processing file: {e}"
+    
+    return HttpResponse(message)
+
+@require_http_methods(["GET"])
+def reset_title_crews(request, file_path):
+    success_count = 0
+    error_count = 0
+    
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter='\t')
+            for row in reader:
+                try:
+                    tconst = row['tconst']
+                    directors = row['directors'] if row['directors'] != '\\N' else None
+                    writers = row['writers'] if row['writers'] != '\\N' else None
+                    
+                    Crews.objects.update_or_create(
+                        tconst=tconst,
+                        defaults={
+                            'directors': directors,
+                            'writers': writers,
+                        }
+                    )
+                    success_count += 1
+                except Exception as e:
+                    error_count += 1
+                    print(f"Error processing row: {e}")
+
+        message = f"Crews reset successfully. Created/Updated: {success_count}, Errors: {error_count}."
+    except FileNotFoundError:
+        message = "File not found."
+    except Exception as e:
+        message = f"Error processing file: {e}"
+
+    return HttpResponse(message)
+
+@require_http_methods(["GET"])
+def reset_title_episode(request, file_path):
+    success_count = 0
+    error_count = 0
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter='\t')
+            for row in reader:
+                try:
+                    tconst = row['tconst']
+                    parentTconst = row['parentTconst']
+                    seasonNumber = row['seasonNumber'] if row['seasonNumber'] != '\\N' else None
+                    episodeNumber = row['episodeNumber'] if row['episodeNumber'] != '\\N' else None
+
+                    Episode.objects.update_or_create(
+                        tconst=tconst,
+                        defaults={
+                            'parentTconst': parentTconst,
+                            'seasonNumber': seasonNumber,
+                            'episodeNumber': episodeNumber,
+                        }
+                    )
+                    success_count += 1
+                except Exception as e:
+                    error_count += 1
+                    print(f"Error processing row: {e}")
+
+        message = f"Episodes reset successfully. Created/Updated: {success_count}, Errors: {error_count}."
+    except FileNotFoundError:
+        message = "File not found."
+    except Exception as e:
+        message = f"Error processing file: {e}"
+
+    return HttpResponse(message)
+
+@require_http_methods(["GET"])
+def reset_title_ratings(request, file_path):
+    success_count = 0
+    error_count = 0
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter='\t')
+            for row in reader:
+                try:
+                    tconst = row['tconst']
+                    averageRating = row['averageRating']
+                    numVotes = row['numVotes']
+                    
+                    Ratings.objects.update_or_create(
+                        tconst=tconst,
+                        defaults={
+                            'averageRating': averageRating,
+                            'numVotes': numVotes,
+                        }
+                    )
+                    success_count += 1
+                except Exception as e:
+                    error_count += 1
+                    print(f"Error processing row: {e}")
+
+        message = f"Ratings reset successfully. Created/Updated: {success_count}, Errors: {error_count}."
+    except FileNotFoundError:
+        message = "File not found."
+    except Exception as e:
+        message = f"Error processing file: {e}"
+
+    return HttpResponse(message)
+
+@require_http_methods(["GET"])
+def reset_title_akas(request, file_path):
+    success_count = 0
+    error_count = 0
+    
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter='\t')
+            for row in reader:
+                try:
+                    titleId = row['titleId']
+                    ordering = row['ordering']
+                    title = row['title']
+                    region = row['region'] if row['region'] != '\\N' else None
+                    language = row['language'] if row['language'] != '\\N' else None
+                    types = row['types'] if row['types'] != '\\N' else None
+                    attributes = row['attributes'] if row['attributes'] != '\\N' else None
+                    isOriginalTitle = row['isOriginalTitle'] == '1'
+
+                    # Creating or updating the Akas entry
+                    Akas.objects.update_or_create(
+                        titleId=titleId,
+                        ordering=ordering,
+                        defaults={
+                            'title': title,
+                            'region': region,
+                            'language': language,
+                            'types': types,
+                            'attributes': attributes,
+                            'isOriginalTitle': isOriginalTitle,
+                        }
+                    )
+                    success_count += 1
+                except Exception as e:
+                    error_count += 1
+                    print(f"Error processing row: {e}")
+
+        message = f"Akas reset successfully. Created/Updated: {success_count}, Errors: {error_count}."
+    except FileNotFoundError:
+        message = "File not found."
+    except Exception as e:
+        message = f"Error processing file: {e}"
+    
+    return HttpResponse(message)
+
+@require_http_methods(["GET"])
+def reset_title_principals(request, file_path):
+    success_count = 0
+    error_count = 0
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter='\t')
+            for row in reader:
+                try:
+                    tconst = row['tconst']
+                    ordering = row['ordering']
+                    nconst = row['nconst']
+                    category = row['category']
+                    job = row['job'] if row['job'] != '\\N' else None
+                    characters = row['characters'] if row['characters'] != '\\N' else None
+                    img_url_asset = row.get('img_url_asset', None)
+
+                    # Creating or updating the Principals entry
+                    Principals.objects.update_or_create(
+                        tconst=tconst,
+                        ordering=ordering,
+                        defaults={
+                            'nconst': nconst,
+                            'category': category,
+                            'job': job,
+                            'characters': characters,
+                            'img_url_asset': img_url_asset,
+                        }
+                    )
+                    success_count += 1
+                except Exception as e:
+                    error_count += 1
+                    print(f"Error processing row: {e}")
+
+        message = f"Principals reset successfully. Created/Updated: {success_count}, Errors: {error_count}."
+    except FileNotFoundError:
+        message = "File not found."
+    except Exception as e:
+        message = f"Error processing file: {e}"
+    
+    return HttpResponse(message)
+
+
+def resetall(request):
+    # Delete data from Movies model
+    Movies.objects.all().delete()
+    movies_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.basics.tsv')
+    title_basics_response = reset_title_basics(request, file_path=movies_file_path)
+
+    if isinstance(title_basics_response, HttpResponse):
+        title_basics_message = title_basics_response.content.decode()
+        print(title_basics_message)
+    else:
+        title_basics_message = "Unexpected response type."
+
+    Names.objects.all().delete()
+    names_file_path = os.path.join(settings.BASE_DIR, 'truncated_name.basics.tsv')
+    name_basics_response = reset_name_basics(request, file_path=names_file_path)
+
+    if isinstance(name_basics_response, HttpResponse):
+        name_basics_message = name_basics_response.content.decode()
+        print(name_basics_message)
+    else:
+        name_basics_message = "Unexpected response type."
+
+    Crews.objects.all().delete()
+    crews_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.crew.tsv')
+    title_crews_response = reset_title_crews(request, file_path=crews_file_path)
+
+    if isinstance(title_crews_response, HttpResponse):
+        title_crews_message = title_crews_response.content.decode()
+        print(title_crews_message)
+    else:
+        title_crews_message = "Unexpected response type."
+    
+    Episode.objects.all().delete()
+    episodes_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.episode.tsv')
+    title_episode_response = reset_title_episode(request, file_path=episodes_file_path)
+
+    if isinstance(title_episode_response, HttpResponse):
+        title_episode_message = title_episode_response.content.decode()
+        print(title_episode_message)
+    else:
+        title_episode_message = "Unexpected response type."
+
+    Ratings.objects.all().delete()
+    ratings_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.ratings.tsv')
+    title_ratings_response = reset_title_ratings(request, file_path=ratings_file_path)
+
+    if isinstance(title_ratings_response, HttpResponse):
+        title_ratings_message = title_ratings_response.content.decode()
+        print(title_ratings_message)
+    else:
+        title_ratings_message = "Unexpected response type."
+
+    Akas.objects.all().delete()
+    akas_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.akas.tsv')
+    title_akas_response = reset_title_akas(request, file_path=akas_file_path)
+
+    if isinstance(title_akas_response, HttpResponse):
+        title_akas_message = title_akas_response.content.decode()
+        print(title_akas_message)
+    else:
+        title_akas_message = "Unexpected response type."
+    
+    Principals.objects.all().delete()
+    principals_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.principals.tsv')
+    title_principals_response = reset_title_principals(request, file_path=principals_file_path)
+
+    if isinstance(title_principals_response, HttpResponse):
+        title_principals_message = title_principals_response.content.decode()
+        print(title_principals_message)
+    else:
+        title_akas_message = "Unexpected response type."
+
+        
+        # Principals.objects.all().delete()
+    return render(request, 'resetall.html', 
+                  {'title_basics_message': title_basics_message,
+                    'name_basics_message': name_basics_message,
+                    'title_crews_message': title_crews_message,
+                    'title_episode_message': title_episode_message,
+                    'title_ratings_message': title_ratings_message,
+                    "title_akas_message": title_akas_message,
+                    "title_principals_message": title_principals_message
+                    })
+    
+
+
+
 
 @csrf_exempt  # Disable CSRF token for this example. Use cautiously.
 @require_http_methods(["POST"])  # Ensure that only POST requests are accepted.
@@ -903,85 +1271,3 @@ def user_endpoint_view(request):
     except KeyError:
         # Handle missing keys if necessary
         return HttpResponseBadRequest('Missing required data')
-
-# /////////////////////////////// TITLE Names ///////////////////////////////////////
-
-# def ProcessTitleNamesTSV(request, file, reset = False):
-#     reader = csv.reader(file, delimiter='\t')
-
-#     ignore_first_line = True
-#     for row_number, row in enumerate(reader, start=1):
-#         if ignore_first_line:
-#             ignore_first_line = False
-#             continue
-        
-#         tconst, titleType, primaryTitle, originalTitle, isAdult, startYear, endYear, runtimeMinutes, genres, img_url_asset = row
-        
-#         startYear = None if startYear == '\\N' else startYear
-#         endYear = None if endYear == '\\N' else endYear
-#         runtimeMinutes = None if runtimeMinutes == '\\N' else runtimeMinutes
-#         isAdult = None if isAdult == '\\N' else isAdult
-#         genres = None if genres == '\\N' else genres
-#         img_url_asset = None if img_url_asset == '\\N' else img_url_asset
-        
-#         # Use get_or_create to insert a new element
-#         # into the table if not already existed
-#         try:
-#             title_obj, created = Names.objects.get_or_create(
-#                 tconst=tconst,
-#                 defaults={
-#                     'titleType': titleType,
-#                     'primaryTitle': primaryTitle,
-#                     'originalTitle': originalTitle,
-#                     'isAdult': isAdult,
-#                     'startYear': startYear,
-#                     'endYear': endYear,
-#                     'runtimeMinutes': runtimeMinutes,
-#                     'genres': genres,
-#                     'img_url_asset': img_url_asset,
-#                 }
-#             )
-
-#             if created:
-#                 print(f"Created new record for tconst: {tconst}")
-#                 # if reset == False:
-#                 #     UploadTitleObject(request, Names.objects.filter(tconst=tconst))
-#             else:
-#                 print(f"Record for tconst {tconst} already exists, skipping.")
-
-#         except Names.MultipleObjectsReturned:
-#             print(f"Multiple records found for tconst: {tconst}, skipping.")
-
-#         print(f"Processed row number: {row_number-1}")
-#     return row_number-1
-
-# def UploadTitleNames(request):
-#     if request.method == 'POST':
-#         superuser_token = User.objects.filter(is_superuser=True).values_list('auth_token', flat=True).first()
-#         token = request.META.get('HTTP_AUTHORIZATION')
-#         print(superuser_token)
-#         print(token)
-
-#         # Check if the authenticated user is a superuser
-#         if token == superuser_token:
-#             form = BasicForm(request.POST, request.FILES)
-#             if form.is_valid():
-#                 file = form.cleaned_data['tsv_file']
-#                 decoded_file = file.read().decode('utf-8').splitlines()
-#                 rows = ProcessTitleNamesTSV(request, decoded_file)
-#                 return JsonResponse({'status': 'success', 'processed_rows': rows})
-#             else:
-#                 return JsonResponse({'status': 'error', 'message': 'Form is not valid'}, status=400)
-#         else:
-#             return JsonResponse({'detail': 'Permission denied. You don\'t have administrator privileges.'}, status=403)
-#     else:
-#         form = BasicForm()
-#         return render(request, 'upload.html', {'form': form})
-
-
-# def ResetTitleNames(request):
-#     Names.objects.all().delete()
-#     specific_file_path = '..\\..\\Database\\Data\\truncated_title.Names.tsv'
-#     with open(specific_file_path, 'r', encoding='utf-8') as file:
-#         rows = ProcessTitleNamesTSV(request, file, True)
-#     return JsonResponse({'status': 'success', 'processed_rows': rows})

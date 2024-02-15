@@ -43,6 +43,14 @@
             text-decoration: underline;
         }
 
+        .healthcheck-section {
+            background-color: #fff;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
         .search-section {
             display: flex;
             justify-content: center;
@@ -73,6 +81,22 @@
             background: white;
             color: #333;
             font-size: 1.2em; /* Matching font size with search box */
+        }
+
+        dl {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 10px 20px;
+            margin: 0;
+        }
+
+        dt {
+            font-weight: bold;
+        }
+
+        dd {
+            margin: 0;
+            text-align: right;
         }
 
         button {
@@ -154,13 +178,15 @@
         <a href="/ntuaflix_api/upload">Upload</a>
         <a href="/ntuaflix_api/bygenre/html">By Genre</a>
     </nav>
-<body>
-    <h1>Health Check</h1>
-    <p>Perform a Health Check for connection to the database</p>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Upload File</button>
-    </form>
-</body>
+    <body>
+        <div class="healthcheck-section">
+            <h2>Healtch Check Details</h2>
+            <dl>
+                <dt>Status</dt>
+                <dd>{{ status }}</dd>
+                <dt>Data Connection:</dt>
+                <dd>{{ dataconnection }}</dd>
+            </dl>
+        </div>
+    </body>
 </html>

@@ -221,7 +221,7 @@
             <li><a href="/ntuaflix_api/upload/title_episodes">Upload Title Episodes</a></li>
             <li><a href="/ntuaflix_api/upload/title_crews">Upload Title Crews</a></li>
             <li><a href="/ntuaflix_api/healthcheck">Health Check</a></li>
-            <li><a href="/ntuaflix_api/resetall">Reset All</a></li>
+            <li><a href="/ntuaflix_api/resetall" id="resetAll">Reset All</a></li>
 
 
 
@@ -233,6 +233,23 @@
         <p>Back to <a href="/ntuaflix_api">Home</a></p>
         <p>© 2024 Ntuaflix</p>
     </footer>
+
+    <script>
+        document.getElementById('resetAll').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the link from directing immediately.
+            const userConfirmed = confirm("Are you sure you want to reset all the tables in your database?");
+            
+            if (userConfirmed) {
+                // User clicked 'Yes', proceed to the reset all page.
+                window.location.href = this.href;
+            } else {
+                // User clicked 'No', redirect back to the upload page (or stay on the current page).
+                window.location.href = '/ntuaflix_api/upload'; // Adjust the URL to your upload page if different.
+            }
+        });
+    </script>
+    
+
 </body>
 
 </html>
