@@ -41,6 +41,10 @@ def login(request):
     template = loader.get_template('login.html')
     return HttpResponse(template.render())
 
+def logout(request):
+    template = loader.get_template('logout.html')
+    return HttpResponse(template.render())
+
 def bygenre(request):
     # Get parameters from request
     qgenre = request.GET.get('qgenre')

@@ -4,6 +4,7 @@ from django.urls import path
 urlpatterns = [
     path("", views.home, name="home"),
     path("login",views.login, name="login"),
+    path("logout",views.logout,name="logout"),
 
     path("name", views.names, name="name"),
     path('name/<str:nconst>', views.name_details_json, name='name details json'),
