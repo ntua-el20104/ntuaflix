@@ -111,6 +111,8 @@ def bygenre_json(request):
     if minrating:
         titles = titles.filter(tconst__in=Ratings.objects.filter(averageRating__gte=minrating).values_list('tconst', flat=True))
 
+    data_format = request.GET.get('format', 'json').lower()
+
     titles_list = []
     for title in titles:
         try:
@@ -148,6 +150,34 @@ def bygenre_json(request):
         }
         titles_list.append(titleObject)
     
+    # If the CSV format is requested, create a CSV response
+    if data_format == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="movies.csv"'
+        writer = csv.writer(response)
+
+        # Write the header
+        writer.writerow(['title', 'titleID', 'primaryTitle', 'type', 'originalTitle',
+                         'startYear', 'endYear', 'genres', 'titleAkas', 'principals', 'averageRating', 'numVotes'])
+
+        # Write the data rows
+        for title in titles_list:
+            writer.writerow([title['title'],
+                             title['titleID'],
+                             title['primaryTitle'],
+                             title['type'],
+                             title['originalTitle'],
+                             title['startYear'],
+                             title['endYear'],
+                             ';'.join(title['genres']),
+                             ';'.join([aka['title'] for aka in title['titleAkas']]),
+                             ';'.join([f"{principal['nameId']} - {principal['primaryName']} - {principal['category']}"
+                                       for principal in title['principals']]),
+                             title['rating_object']['Average Rating'] if title['rating_object'] else '',
+                             title['rating_object']['Number of Votes'] if title['rating_object'] else ''])
+        return response
+
+
     if not titles_list:
         return JsonResponse({'movies': titles_list}, status=204) 
     return JsonResponse({'movies': titles_list}, status=200)
@@ -171,6 +201,7 @@ def search_names(request):
 
 def search_names_json(request):
     name_query = request.GET.get('query', '')
+    data_format = request.GET.get('format', 'json').lower()
 
     if re.search(r'\d', name_query):  # This regex looks for any digit in the query
         return JsonResponse({'error': 'Name must not contain numbers'}, status=400)
@@ -209,6 +240,8 @@ def search_names_json(request):
             'nameTitles': nameTitles,
         }
         names_list.append(nameObject)
+    
+    
     
     if not names_list:
         return JsonResponse({'names': names_list}, status=204) 
@@ -258,14 +291,13 @@ def name_details(request, nconst):
 
 def name_details_json(request, nconst):
   person = Names.objects.get(nconst=nconst)
-  template2 = loader.get_template('my_custom_filters.py')
 
   if not person:
     return JsonResponse({'person': nameObject}, status=204)
 
   try:
       personTitles = Principals.objects.filter(nconst=nconst)
-      nameTitles = [(f"titleID: {x.tconst}", f"category: {x.category}") for x in personTitles]
+      nameTitles = [{f"titleID": x.tconst, f"category": x.category} for x in personTitles]
   except personTitles.DoesNotExist:
       personTitles = None
       nameTitles = None
@@ -288,7 +320,21 @@ def name_details_json(request, nconst):
     'nameTitles':nameTitles
     }
 
-  return JsonResponse(nameObject)
+  data_format = request.GET.get('format', 'json').lower()
+
+  if data_format == 'csv':
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="{person.primaryName}_details.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['Name ID', 'Name', 'Poster URL', 'Birth Year', 'Death Year', 'Profession', 'Known For Titles'])
+
+        professions = '; '.join(nameObject['profession'])
+        known_for_titles = '; '.join([f"{title['titleID']} ({title['category']})" for title in nameObject['nameTitles']])
+        writer.writerow([nameObject['nameID'], nameObject['name'], nameObject['namePoster'], nameObject['birthYr'], nameObject['deathYr'], professions, known_for_titles])
+
+        return response
+
+  return JsonResponse(nameObject, safe=False, json_dumps_params={'ensure_ascii': False})
 
 def titles(request):
     titles = Movies.objects.all().order_by('primaryTitle').values() 
