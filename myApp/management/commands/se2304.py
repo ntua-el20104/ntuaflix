@@ -2,6 +2,8 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 import json
+from django.db import connections
+from django.db.utils import OperationalError
 from myApp.models import *
 # from models import Names
 from django.core.exceptions import ValidationError
@@ -25,6 +27,9 @@ class Command(BaseCommand):
 
         # See users in database
         seeusers_parser = subparsers.add_parser('seeusers')
+
+        # Health Check 
+        healthcheck_parser = subparsers.add_parser('healthcheck')
 
         # Subparser for the login command
         login_parser = subparsers.add_parser('login')
@@ -166,10 +171,12 @@ class Command(BaseCommand):
             self.import_akas(options)
         elif subcommand == 'newtitles':
             self.import_titles(options)
-        if subcommand == 'resetall':
+        elif subcommand == 'resetall':
             self.resetall()
         elif subcommand == 'login':
             self.login_user(options)
+        elif subcommand == 'healthcheck':
+            self.health_check()
 
     def add_user(self, username, password):
         try:
@@ -762,6 +769,7 @@ class Command(BaseCommand):
         os.system("python manage.py se2304 newratings --filename truncated_title.ratings.tsv")
         
     def login_user(self, options):
+
         # Assuming you're receiving 'username' and 'password' as POST parameters
         username = options['username']
         password = options['password']
@@ -791,3 +799,22 @@ class Command(BaseCommand):
                 print("Failed to post data. Status code:", response.status_code)
         else:
             print("Authentication failed.")
+
+
+    def health_check(self):
+        # Example of checking database connectivity
+        db_conn = connections['default']
+        try:
+            db_conn.cursor()
+            db_status = "OK"
+        except OperationalError:
+            db_status = "Failed"
+        
+        # Assuming 'connection_name' is a placeholder for your actual connection string's reference or identifier
+        connection_name = "Server = http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3;"  # Be cautious with sensitive info
+        if db_status == "OK":
+            response = {"status": "OK", "dataconnection": connection_name}
+        else:
+            response = {"status": "Failed", "dataconnection": connection_name}
+        print(response)
+        #return JsonResponse(response)
