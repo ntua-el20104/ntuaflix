@@ -12,6 +12,9 @@
             background-size: cover;
             color: #333;
             line-height: 1.6;
+            justify-content: center;
+            display: flex;
+            align-items: center;
         }
         form {
             display: flex;
@@ -63,26 +66,26 @@
     </style>
 </head>
 <body>
-    <header>
-        <h1>Ntuaflix</h1>
-    </header>
-    
+    <div class="centered-container">
+        <header>
+            <h1>Ntuaflix</h1>
+        </header>
 
-<form action="{% url 'login' %}" method="post">
-    {% csrf_token %}
-    <div style="height: 150px;"></div> <!-- Δημιουργούμε έναν κενό χώρο πριν το πεδίο username -->
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username">
-    <div style="height: 10px;"></div> 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password">
-    <div style="height: 15px;"></div> 
-    <button type="submit">Login</button>
-</form>
-    <div style="height: 30px;"></div>
-{% if message %}    
-<h3>{{ message }}</h3>
-{% endif %}
-
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <div style="height: 150px;"></div> <!-- Creating space before the username field -->
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username">
+            <div style="height: 10px;"></div> 
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+            <div style="height: 15px;"></div> 
+            <button type="submit">Login</button>
+            <div style="height: 30px;"></div>
+            {% if message %}    
+            <h3>{{ message }}</h3>
+            {% endif %}
+        </form>
+    </div>
 </body>
 </html>
