@@ -23,7 +23,6 @@ from django.contrib import messages
 def home(request):
     if 'user' in request.session:
         current_user = request.session['user']
-        print(current_user)
 
             # If averageRating is still a CharField, convert it to float for ordering
         top_ratings = Ratings.objects.annotate(
@@ -73,41 +72,44 @@ def logout(request):
     return HttpResponse(template.render())
 
 def bygenre(request):
-    # Get parameters from request
-    qgenre = request.GET.get('qgenre')
-    minrating = request.GET.get('minrating')
-    yrFrom = request.GET.get('yrFrom')
-    yrTo = request.GET.get('yrTo')
+    if 'user' in request.session:
+        current_user = request.session['user']
 
-        # Start with all movies
-    titles = Movies.objects.all().order_by('primaryTitle')
-    
-    results_title = "{} Titles".format(qgenre if qgenre else "All")
+        # Get parameters from request
+        qgenre = request.GET.get('qgenre')
+        minrating = request.GET.get('minrating')
+        yrFrom = request.GET.get('yrFrom')
+        yrTo = request.GET.get('yrTo')
 
-        # Filter by genre if qgenre is provided
-    if qgenre:
-        titles = titles.filter(genres__icontains=qgenre)
-        results_title = "{} Titles".format(qgenre)
-    
-    # Filter by year range if yrFrom and/or yrTo are provided
-    if yrFrom and yrTo:
-        titles = titles.filter(startYear__gte=yrFrom, startYear__lte=yrTo)
-        results_title += " From {} to {}".format(yrFrom, yrTo)
-    elif yrFrom:
-        titles = titles.filter(startYear__gte=yrFrom)
-        results_title += " From {}".format(yrFrom)
-    elif yrTo:
-        titles = titles.filter(startYear__lte=yrTo)
-        results_title += " Up to {}".format(yrTo)
-    
-    # Join with Ratings table and filter by minimum rating if provided
-    if minrating:
-        titles = titles.filter(tconst__in=Ratings.objects.filter(averageRating__gte=minrating).values_list('tconst', flat=True))
-        results_title += " Rated at least {}".format(minrating)
-    
-    
-    # Render the response with the filtered context
-    return render(request, 'bygenre.html', {'titles': titles, 'results_title': results_title})
+            # Start with all movies
+        titles = Movies.objects.all().order_by('primaryTitle')
+        
+        results_title = "{} Titles".format(qgenre if qgenre else "All")
+
+            # Filter by genre if qgenre is provided
+        if qgenre:
+            titles = titles.filter(genres__icontains=qgenre)
+            results_title = "{} Titles".format(qgenre)
+        
+        # Filter by year range if yrFrom and/or yrTo are provided
+        if yrFrom and yrTo:
+            titles = titles.filter(startYear__gte=yrFrom, startYear__lte=yrTo)
+            results_title += " From {} to {}".format(yrFrom, yrTo)
+        elif yrFrom:
+            titles = titles.filter(startYear__gte=yrFrom)
+            results_title += " From {}".format(yrFrom)
+        elif yrTo:
+            titles = titles.filter(startYear__lte=yrTo)
+            results_title += " Up to {}".format(yrTo)
+        
+        # Join with Ratings table and filter by minimum rating if provided
+        if minrating:
+            titles = titles.filter(tconst__in=Ratings.objects.filter(averageRating__gte=minrating).values_list('tconst', flat=True))
+            results_title += " Rated at least {}".format(minrating)
+        
+        
+        # Render the response with the filtered context
+        return render(request, 'bygenre.html', {'titles': titles, 'results_title': results_title})
 
 def bygenre_json(request):
      # Get parameters from request
@@ -214,21 +216,27 @@ def bygenre_json(request):
     return JsonResponse({'movies': titles_list}, status=200)
 
 def names(request):
-    names = Names.objects.all().order_by('primaryName').values() 
-    template = loader.get_template('names.html')
-    context = {
-        'names': names
-    }
-    return HttpResponse(template.render(context, request))
+    if 'user' in request.session:
+        current_user = request.session['user']
+
+        names = Names.objects.all().order_by('primaryName').values() 
+        template = loader.get_template('names.html')
+        context = {
+            'names': names
+        }
+        return HttpResponse(template.render(context, request))
 
 def search_names(request):
-    name_query = request.GET.get('query', '')
+    if 'user' in request.session:
+        current_user = request.session['user']
 
-    if name_query:
-        names = Names.objects.filter(primaryName__icontains=name_query)
-    else:
-        names = Names.objects.none()  # Return an empty queryset if no query
-    return render(request, 'search_names.html', {'names': names})
+        name_query = request.GET.get('query', '')
+
+        if name_query:
+            names = Names.objects.filter(primaryName__icontains=name_query)
+        else:
+            names = Names.objects.none()  # Return an empty queryset if no query
+        return render(request, 'search_names.html', {'names': names})
 
 def search_names_json(request):
     name_query = request.GET.get('query', '')
@@ -279,46 +287,49 @@ def search_names_json(request):
     return JsonResponse({'names': names_list}, status=200)
 
 def name_details(request, nconst):
-  person = Names.objects.get(nconst=nconst)
-  template2 = loader.get_template('my_custom_filters.py')
+  if 'user' in request.session:
+    current_user = request.session['user']
+        
+    person = Names.objects.get(nconst=nconst)
+    template2 = loader.get_template('my_custom_filters.py')
 
-  try:
-        personTitles = Principals.objects.filter(nconst=nconst)
-        nameTitles = []
-        for x in personTitles:
-            movie = Movies.objects.get(tconst=x.tconst)  # Get the corresponding movie
-            nameTitles.append((movie.tconst,movie.primaryTitle))
-            for title in nameTitles:
-                print(title[0])
-            print(nameTitles)  # Append title as string
-  except Movies.DoesNotExist:
-        nameTitles = []
+    try:
+            personTitles = Principals.objects.filter(nconst=nconst)
+            nameTitles = []
+            for x in personTitles:
+                movie = Movies.objects.get(tconst=x.tconst)  # Get the corresponding movie
+                nameTitles.append((movie.tconst,movie.primaryTitle))
+                for title in nameTitles:
+                    print(title[0])
+                print(nameTitles)  # Append title as string
+    except Movies.DoesNotExist:
+            nameTitles = []
 
-  except personTitles.DoesNotExist:
-      personTitles = None
-      nameTitles = None
+    except personTitles.DoesNotExist:
+        personTitles = None
+        nameTitles = None
 
 
-  if person.img_url_asset == None :
-    full_url = None
-  else:
-    baseurl = person.img_url_asset
-    width = "w220_and_h330_face"
-    full_url = baseurl.replace("{width_variable}", width)
+    if person.img_url_asset == None :
+        full_url = None
+    else:
+        baseurl = person.img_url_asset
+        width = "w220_and_h330_face"
+        full_url = baseurl.replace("{width_variable}", width)
 
-  template = loader.get_template('name_details.html')
-  
-  nameObject = {
-    'person': person,
-    'nameID':person.nconst,
-    'name':person.primaryName,
-    'namePoster': full_url,
-    'birthYr':person.birthYear,
-    'deathYr':person.deathYear,
-    'profession':person.primaryProfession.split(","),
-    'nameTitles':nameTitles
-    }
-  return HttpResponse(template.render(nameObject, request))
+    template = loader.get_template('name_details.html')
+    
+    nameObject = {
+        'person': person,
+        'nameID':person.nconst,
+        'name':person.primaryName,
+        'namePoster': full_url,
+        'birthYr':person.birthYear,
+        'deathYr':person.deathYear,
+        'profession':person.primaryProfession.split(","),
+        'nameTitles':nameTitles
+        }
+    return HttpResponse(template.render(nameObject, request))
 
 def name_details_json(request, nconst):
   person = Names.objects.get(nconst=nconst)
@@ -368,20 +379,26 @@ def name_details_json(request, nconst):
   return JsonResponse(nameObject, safe=False, json_dumps_params={'ensure_ascii': False})
 
 def titles(request):
-    titles = Movies.objects.all().order_by('primaryTitle').values() 
-    template = loader.get_template('titles.html')
-    context = {
-        'titles': titles
-    }
-    return HttpResponse(template.render(context, request))
+    if 'user' in request.session:
+        current_user = request.session['user']
+
+        titles = Movies.objects.all().order_by('primaryTitle').values() 
+        template = loader.get_template('titles.html')
+        context = {
+            'titles': titles
+        }
+        return HttpResponse(template.render(context, request))
 
 def search_titles(request):
-    title_query = request.GET.get('query', '')
-    if title_query:
-        movies = Movies.objects.filter(primaryTitle__icontains=title_query)
-    else:
-        movies = Movies.objects.none()  # Return an empty queryset if no query
-    return render(request, 'search_titles.html', {'movies': movies})
+    if 'user' in request.session:
+        current_user = request.session['user']
+
+        title_query = request.GET.get('query', '')
+        if title_query:
+            movies = Movies.objects.filter(primaryTitle__icontains=title_query)
+        else:
+            movies = Movies.objects.none()  # Return an empty queryset if no query
+        return render(request, 'search_titles.html', {'movies': movies})
 
 def search_titles_json(request):
     title_query = request.GET.get('query', '')
@@ -458,79 +475,83 @@ def search_titles_json(request):
     return JsonResponse({'movies': titles_list})
 
 def title_details(request, tconst):
-  try:  
-    title = Movies.objects.get(tconst=tconst)
-    template = loader.get_template('title_details.html')
-    
-    try:
-        rating = Ratings.objects.get(tconst=tconst)
-        rating_object = (f"Average Rating: {rating.averageRating}",f"Number of Votes: {rating.numVotes}" )
-    except Ratings.DoesNotExist:
-        rating = None
-        rating_object = None
+  if 'user' in request.session:
+    current_user = request.session['user']
 
-    try:
-        akas = Akas.objects.filter(titleId=tconst)
-        akas_titles = [(entry.title,entry.region,entry.titleId) for entry in akas]
+    try:  
+        title = Movies.objects.get(tconst=tconst)
+        template = loader.get_template('title_details.html')
+        
+        try:
+            rating = Ratings.objects.get(tconst=tconst)
+            rating_object = (f"Average Rating: {rating.averageRating}",f"Number of Votes: {rating.numVotes}" )
+        except Ratings.DoesNotExist:
+            rating = None
+            rating_object = None
 
-    except Akas.DoesNotExist:
-        akas = None
-        akas_titles = None
-    
-    try:
-        # Assuming you've already fetched 'principal' as you've shown:
-        principal = Principals.objects.filter(tconst=tconst)
+        try:
+            akas = Akas.objects.filter(titleId=tconst)
+            akas_titles = [(entry.title,entry.region,entry.titleId) for entry in akas]
 
-# For each principal, fetch the corresponding person from the Names table and create tuples
-        principal_id_and_name = []
-        for x in principal:
-            try:
-                name_entry = Names.objects.get(nconst=x.nconst)
-                principal_id_and_name.append((name_entry.primaryName,x.category,x.nconst))
-            except Names.DoesNotExist:
-        # Handle the case where no corresponding entry in Names exists
-                name_entry = None
-                principal_id_and_name.append((x.nconst, x.category, None))
+        except Akas.DoesNotExist:
+            akas = None
+            akas_titles = None
+        
+        try:
+            # Assuming you've already fetched 'principal' as you've shown:
+            principal = Principals.objects.filter(tconst=tconst)
 
-# Now, principal_id_and_name contains tuples of (nconst, category, primaryName) for each matching entry
+    # For each principal, fetch the corresponding person from the Names table and create tuples
+            principal_id_and_name = []
+            for x in principal:
+                try:
+                    name_entry = Names.objects.get(nconst=x.nconst)
+                    principal_id_and_name.append((name_entry.primaryName,x.category,x.nconst))
+                except Names.DoesNotExist:
+            # Handle the case where no corresponding entry in Names exists
+                    name_entry = None
+                    principal_id_and_name.append((x.nconst, x.category, None))
 
-    except Principals.DoesNotExist:
-        principal = None
-    
-    if title.img_url_asset == None :
-        full_url = None
-    else:
-        baseurl = title.img_url_asset
-        width = "w220_and_h330_face"
-        full_url = baseurl.replace("{width_variable}", width)
-    
-    context = {
-        'title': title,
-        'image_url': full_url,
-        'rating':rating 
-    }
+    # Now, principal_id_and_name contains tuples of (nconst, category, primaryName) for each matching entry
 
-    titleObject = {
-        'title':title,
-        'titleID':title.tconst,
-        'primaryTitle':title.primaryTitle,
-        'type':title.titleType,
-        'originalTitle': title.originalTitle,
-        'titlePoster': full_url,
-        'startYear': title.startYear,
-        'endYear':title.endYear,
-        'genres': title.genres,
-        'titleAkas':akas_titles,
-        'principals': principal_id_and_name,
-        'rating':rating,
-        'rating_object':rating_object
-        # 'averageRating': rating.averageRating,
-        # 'numVotes':rating.numVotes
-    }
+        except Principals.DoesNotExist:
+            principal = None
+        
+        if title.img_url_asset == None :
+            full_url = None
+        else:
+            baseurl = title.img_url_asset
+            width = "w220_and_h330_face"
+            full_url = baseurl.replace("{width_variable}", width)
+        
+        context = {
+            'title': title,
+            'image_url': full_url,
+            'rating':rating 
+        }
 
-    return HttpResponse(template.render(titleObject,request))
-  except Movies.DoesNotExist:
-        return JsonResponse({'error': 'Movie not found'}, status=404)
+        titleObject = {
+            'title':title,
+            'titleID':title.tconst,
+            'primaryTitle':title.primaryTitle,
+            'type':title.titleType,
+            'originalTitle': title.originalTitle,
+            'titlePoster': full_url,
+            'startYear': title.startYear,
+            'endYear':title.endYear,
+            'genres': title.genres,
+            'titleAkas':akas_titles,
+            'principals': principal_id_and_name,
+            'rating':rating,
+            'rating_object':rating_object,
+            'current_user': current_user
+            # 'averageRating': rating.averageRating,
+            # 'numVotes':rating.numVotes
+        }
+
+        return HttpResponse(template.render(titleObject,request))
+    except Movies.DoesNotExist:
+            return JsonResponse({'error': 'Movie not found'}, status=404)
   
 def title_details_json(request, tconst):
   try:  
@@ -609,338 +630,364 @@ def title_details_json(request, tconst):
         return JsonResponse({'error': 'Movie not found'}, status=404)
 
 def upload(request):
-    template = loader.get_template('upload.html')
-    return HttpResponse(template.render())
+    if 'user' in request.session:
+        current_user = request.session['user']
+
+        template = loader.get_template('upload.html')
+        return HttpResponse(template.render())
 
 
 # @csrf_exempt  # Disable CSRF token for simplicity, consider CSRF protection for production
 @require_http_methods(["GET","POST"])
 def upload_title_basics(request):
-    success_count = 0
-    error_count = 0
-    form = UploadFileForm()
-    
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        
-        if form.is_valid() and 'file' in request.FILES:
-            file = request.FILES['file']
-            try:
-                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
-    
-                for row in reader:
-                    tconst = row['tconst']
-                    titleType = row['titleType']
-                    primaryTitle = row['primaryTitle']
-                    originalTitle = row['originalTitle']
-                    isAdult = row['isAdult']
-                    startYear = row['startYear'] if row['startYear'] != '\\N' else None
-                    endYear = row['endYear'] if row['endYear'] != '\\N' else None
-                    runtimeMinutes = row['runtimeMinutes'] if row['runtimeMinutes'] != '\\N' else None
-                    genres = row['genres'] if row['genres'] != '\\N' else None
-                    img_url_asset = row.get('img_url_asset', '\\N')  # Use get to handle missing 'img_url_asset'
-        
-            
-                    created = Movies.objects.update_or_create(
-                        tconst=tconst,
-                        defaults={
-                            'titleType': titleType,
-                            'primaryTitle': primaryTitle,
-                            'originalTitle': originalTitle,
-                            'isAdult': isAdult,
-                            'startYear': int(startYear) if startYear else None,
-                            'endYear': int(endYear) if endYear else None,
-                            'runtimeMinutes': int(runtimeMinutes) if runtimeMinutes else None,
-                            'genres': genres,
-                            'img_url_asset': img_url_asset if img_url_asset != '\\N' else None,
-                            }
-                    )
-                    if created:
-                        success_count += 1
-                    else:
-                        success_count += 1  # Αυτό μπορεί να αλλάξει αν θέλετε να κρατάτε διαφορετικό σκορ για updates
-            except ValidationError as e:
-                    error_count += 1
+    if 'user' in request.session:
+        current_user = request.session['user']
 
-            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
-            return HttpResponse(message)
-    return render(request, 'upload_title_basics.html', {'form': form})
+        success_count = 0
+        error_count = 0
+        form = UploadFileForm()
+        
+        if request.method == 'POST':
+            form = UploadFileForm(request.POST, request.FILES)
+            
+            if form.is_valid() and 'file' in request.FILES:
+                file = request.FILES['file']
+                try:
+                    reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+        
+                    for row in reader:
+                        tconst = row['tconst']
+                        titleType = row['titleType']
+                        primaryTitle = row['primaryTitle']
+                        originalTitle = row['originalTitle']
+                        isAdult = row['isAdult']
+                        startYear = row['startYear'] if row['startYear'] != '\\N' else None
+                        endYear = row['endYear'] if row['endYear'] != '\\N' else None
+                        runtimeMinutes = row['runtimeMinutes'] if row['runtimeMinutes'] != '\\N' else None
+                        genres = row['genres'] if row['genres'] != '\\N' else None
+                        img_url_asset = row.get('img_url_asset', '\\N')  # Use get to handle missing 'img_url_asset'
+            
+                
+                        created = Movies.objects.update_or_create(
+                            tconst=tconst,
+                            defaults={
+                                'titleType': titleType,
+                                'primaryTitle': primaryTitle,
+                                'originalTitle': originalTitle,
+                                'isAdult': isAdult,
+                                'startYear': int(startYear) if startYear else None,
+                                'endYear': int(endYear) if endYear else None,
+                                'runtimeMinutes': int(runtimeMinutes) if runtimeMinutes else None,
+                                'genres': genres,
+                                'img_url_asset': img_url_asset if img_url_asset != '\\N' else None,
+                                }
+                        )
+                        if created:
+                            success_count += 1
+                        else:
+                            success_count += 1  # Αυτό μπορεί να αλλάξει αν θέλετε να κρατάτε διαφορετικό σκορ για updates
+                except ValidationError as e:
+                        error_count += 1
+
+                message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+                return HttpResponse(message)
+        return render(request, 'upload_title_basics.html', {'form': form})
 
 def upload_names(request):
-    success_count=0
-    error_count=0
+    if 'user' in request.session:
+        current_user = request.session['user']
 
-    form = UploadFileForm()
-    
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        
-        if form.is_valid() and 'file' in request.FILES:
-            file = request.FILES['file']
-            try:
-                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
-    
-                for row in reader:
-                    nconst = row['nconst']
-                    primaryName = row['primaryName']
-                    birthYear = row['birthYear'] if row['birthYear'] != '\\N' else None
-                    deathYear = row['deathYear'] if row['deathYear'] != '\\N' else None
-                    primaryProfession = row['primaryProfession'] if row['primaryProfession'] != '\\N' else None
-                    knownForTitles = row['knownForTitles'] if row['knownForTitles'] != '\\N' else None
-                    img_url_asset = row.get('img_url_asset', '\\N')  # Use get to handle missing 'img_url_asset'
-        
-                    created = Names.objects.update_or_create(
-                        nconst=nconst,
-                        defaults={
-                            'primaryName': primaryName,
-                            'birthYear': birthYear,
-                            'deathYear': deathYear,
-                            'primaryProfession': primaryProfession,
-                            'knownForTitles': knownForTitles,
-                            'img_url_asset': img_url_asset if img_url_asset != '\\N' else None,
-                        }
-                    )
-                    if created:
-                        success_count += 1
-                    else:
-                        success_count += 1  # Αυτό μπορεί να αλλάξει αν θέλετε να κρατάτε διαφορετικό σκορ για updates
-            except ValidationError as e:
-                    error_count += 1
+        success_count=0
+        error_count=0
 
-            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
-            return HttpResponse(message)
-    return render(request, 'upload_name_basics.html', {'form': form})
+        form = UploadFileForm()
+        
+        if request.method == 'POST':
+            form = UploadFileForm(request.POST, request.FILES)
+            
+            if form.is_valid() and 'file' in request.FILES:
+                file = request.FILES['file']
+                try:
+                    reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+        
+                    for row in reader:
+                        nconst = row['nconst']
+                        primaryName = row['primaryName']
+                        birthYear = row['birthYear'] if row['birthYear'] != '\\N' else None
+                        deathYear = row['deathYear'] if row['deathYear'] != '\\N' else None
+                        primaryProfession = row['primaryProfession'] if row['primaryProfession'] != '\\N' else None
+                        knownForTitles = row['knownForTitles'] if row['knownForTitles'] != '\\N' else None
+                        img_url_asset = row.get('img_url_asset', '\\N')  # Use get to handle missing 'img_url_asset'
+            
+                        created = Names.objects.update_or_create(
+                            nconst=nconst,
+                            defaults={
+                                'primaryName': primaryName,
+                                'birthYear': birthYear,
+                                'deathYear': deathYear,
+                                'primaryProfession': primaryProfession,
+                                'knownForTitles': knownForTitles,
+                                'img_url_asset': img_url_asset if img_url_asset != '\\N' else None,
+                            }
+                        )
+                        if created:
+                            success_count += 1
+                        else:
+                            success_count += 1  # Αυτό μπορεί να αλλάξει αν θέλετε να κρατάτε διαφορετικό σκορ για updates
+                except ValidationError as e:
+                        error_count += 1
+
+                message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+                return HttpResponse(message)
+        return render(request, 'upload_name_basics.html', {'form': form})
 
 def upload_akas(request):
-    success_count = 0
-    error_count = 0
+    if 'user' in request.session:
+        current_user = request.session['user']
 
-    form = UploadFileForm()
+        success_count = 0
+        error_count = 0
 
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
+        form = UploadFileForm()
 
-        if form.is_valid() and 'file' in request.FILES:
-            file = request.FILES['file']
-            try:
-                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+        if request.method == 'POST':
+            form = UploadFileForm(request.POST, request.FILES)
 
-                for row in reader:
-                    # Parse data from the CSV row
-                    titleId = row['titleId']
-                    ordering = row['ordering']
-                    title = row['title']
-                    region = row['region'] if row['region'] !='\\N' else None
-                    language = row['language'] if row['language'] !='\\N' else None
-                    types = row['types'] if row['types'] !='\\N' else None
-                    attributes = row['attributes'] if row['attributes'] !='\\N' else None
-                    isOriginalTitle = row['isOriginalTitle']
+            if form.is_valid() and 'file' in request.FILES:
+                file = request.FILES['file']
+                try:
+                    reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
 
-                    # Create or update Akas instance
-                    created = Akas.objects.update_or_create(
-                        titleId=titleId,
-                        ordering= ordering,
-                        defaults={
-                            
-                            'title': title,
-                            'region': region,
-                            'language': language,
-                            'types': types,
-                            'attributes': attributes,
-                            'isOriginalTitle': isOriginalTitle,
-                        }
-                    )
-                    if created:
-                        success_count += 1
-                    else:
-                        error_count += 1
-            except ValidationError:
-                error_count += 1
+                    for row in reader:
+                        # Parse data from the CSV row
+                        titleId = row['titleId']
+                        ordering = row['ordering']
+                        title = row['title']
+                        region = row['region'] if row['region'] !='\\N' else None
+                        language = row['language'] if row['language'] !='\\N' else None
+                        types = row['types'] if row['types'] !='\\N' else None
+                        attributes = row['attributes'] if row['attributes'] !='\\N' else None
+                        isOriginalTitle = row['isOriginalTitle']
 
-            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
-            return HttpResponse(message)
-    return render(request, 'upload_akas.html', {'form': form})
+                        # Create or update Akas instance
+                        created = Akas.objects.update_or_create(
+                            titleId=titleId,
+                            ordering= ordering,
+                            defaults={
+                                
+                                'title': title,
+                                'region': region,
+                                'language': language,
+                                'types': types,
+                                'attributes': attributes,
+                                'isOriginalTitle': isOriginalTitle,
+                            }
+                        )
+                        if created:
+                            success_count += 1
+                        else:
+                            error_count += 1
+                except ValidationError:
+                    error_count += 1
+
+                message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+                return HttpResponse(message)
+        return render(request, 'upload_akas.html', {'form': form})
 
 def upload_principals(request):
-    success_count = 0
-    error_count = 0
+    if 'user' in request.session:
+        current_user = request.session['user']
 
-    form = UploadFileForm()
+        success_count = 0
+        error_count = 0
 
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
+        form = UploadFileForm()
 
-        if form.is_valid() and 'file' in request.FILES:
-            file = request.FILES['file']
-            try:
-                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+        if request.method == 'POST':
+            form = UploadFileForm(request.POST, request.FILES)
 
-                for row in reader:
-                    # Parse data from the CSV row
-                    tconst = row['tconst']
-                    ordering = row['ordering']
-                    nconst = row['nconst']
-                    category = row['category']
-                    job = row.get('job', '\\N')
-                    characters = row.get('characters', '\\N')
-                    img_url_asset = row.get('img_url_asset', '\\N')
+            if form.is_valid() and 'file' in request.FILES:
+                file = request.FILES['file']
+                try:
+                    reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
 
-                    # Create or update Principals instance
-                    created = Principals.objects.update_or_create(
-                        tconst=tconst,
-                        nconst=nconst,
-                        defaults={
-                            'ordering': ordering,
-                            'category': category,
-                            'job': job,
-                            'characters': characters,
-                            'img_url_asset': img_url_asset if img_url_asset != '\\N' else None,
-                        }
-                    )
-                    if created:
-                        success_count += 1
-                    else:
-                        error_count += 1
-            except ValidationError:
-                error_count += 1
+                    for row in reader:
+                        # Parse data from the CSV row
+                        tconst = row['tconst']
+                        ordering = row['ordering']
+                        nconst = row['nconst']
+                        category = row['category']
+                        job = row.get('job', '\\N')
+                        characters = row.get('characters', '\\N')
+                        img_url_asset = row.get('img_url_asset', '\\N')
 
-            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
-            return HttpResponse(message)
+                        # Create or update Principals instance
+                        created = Principals.objects.update_or_create(
+                            tconst=tconst,
+                            nconst=nconst,
+                            defaults={
+                                'ordering': ordering,
+                                'category': category,
+                                'job': job,
+                                'characters': characters,
+                                'img_url_asset': img_url_asset if img_url_asset != '\\N' else None,
+                            }
+                        )
+                        if created:
+                            success_count += 1
+                        else:
+                            error_count += 1
+                except ValidationError:
+                    error_count += 1
 
-    return render(request, 'upload_principals.html', {'form': form})
+                message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+                return HttpResponse(message)
+
+        return render(request, 'upload_principals.html', {'form': form})
 
 def upload_crews(request):
-    success_count = 0
-    error_count = 0
+    if 'user' in request.session:
+        current_user = request.session['user']
 
-    form = UploadFileForm()
+        success_count = 0
+        error_count = 0
 
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
+        form = UploadFileForm()
 
-        if form.is_valid() and 'file' in request.FILES:
-            file = request.FILES['file']
-            try:
-                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+        if request.method == 'POST':
+            form = UploadFileForm(request.POST, request.FILES)
 
-                for row in reader:
-                    # Parse data from the CSV row
-                    tconst = row['tconst']
-                    directors = row.get('directors', '\\N')
-                    writers = row.get('writers', '\\N')
+            if form.is_valid() and 'file' in request.FILES:
+                file = request.FILES['file']
+                try:
+                    reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
 
-                    # Create or update Crews instance
-                    created = Crews.objects.update_or_create(
-                        tconst=tconst,
-                        defaults={
-                            'directors': directors,
-                            'writers': writers,
-                        }
-                    )
-                    if created:
-                        success_count += 1
-                    else:
-                        error_count += 1
-            except ValidationError:
-                error_count += 1
+                    for row in reader:
+                        # Parse data from the CSV row
+                        tconst = row['tconst']
+                        directors = row.get('directors', '\\N')
+                        writers = row.get('writers', '\\N')
 
-            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
-            return HttpResponse(message)
+                        # Create or update Crews instance
+                        created = Crews.objects.update_or_create(
+                            tconst=tconst,
+                            defaults={
+                                'directors': directors,
+                                'writers': writers,
+                            }
+                        )
+                        if created:
+                            success_count += 1
+                        else:
+                            error_count += 1
+                except ValidationError:
+                    error_count += 1
 
-    return render(request, 'upload_crews.html', {'form': form})
+                message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+                return HttpResponse(message)
+
+        return render(request, 'upload_crews.html', {'form': form})
 
 def upload_episodes(request):
-    success_count = 0
-    error_count = 0
+    if 'user' in request.session:
+        current_user = request.session['user']
+        success_count = 0
+        error_count = 0
 
-    form = UploadFileForm()
+        form = UploadFileForm()
 
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
+        if request.method == 'POST':
+            form = UploadFileForm(request.POST, request.FILES)
 
-        if form.is_valid() and 'file' in request.FILES:
-            file = request.FILES['file']
-            try:
-                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+            if form.is_valid() and 'file' in request.FILES:
+                file = request.FILES['file']
+                try:
+                    reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
 
-                for row in reader:
-                    # Parse data from the CSV row
-                    tconst = row['tconst']
-                    parentTconst = row['parentTconst']
-                    seasonNumber = row.get('seasonNumber', '\\N')
-                    episodeNumber = row.get('episodeNumber', '\\N')
+                    for row in reader:
+                        # Parse data from the CSV row
+                        tconst = row['tconst']
+                        parentTconst = row['parentTconst']
+                        seasonNumber = row.get('seasonNumber', '\\N')
+                        episodeNumber = row.get('episodeNumber', '\\N')
 
-                    # Create or update Episode instance
-                    created = Episode.objects.update_or_create(
-                        tconst=tconst,
-                        defaults={
-                            'parentTconst': parentTconst,
-                            'seasonNumber': seasonNumber,
-                            'episodeNumber': episodeNumber,
-                        }
-                    )
-                    if created:
-                        success_count += 1
-                    else:
-                        error_count += 1
-            except ValidationError:
-                error_count += 1
+                        # Create or update Episode instance
+                        created = Episode.objects.update_or_create(
+                            tconst=tconst,
+                            defaults={
+                                'parentTconst': parentTconst,
+                                'seasonNumber': seasonNumber,
+                                'episodeNumber': episodeNumber,
+                            }
+                        )
+                        if created:
+                            success_count += 1
+                        else:
+                            error_count += 1
+                except ValidationError:
+                    error_count += 1
 
-            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
-            return HttpResponse(message)
+                message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+                return HttpResponse(message)
 
-    return render(request, 'upload_episodes.html', {'form': form})
+        return render(request, 'upload_episodes.html', {'form': form})
 
 def upload_ratings(request):
-    success_count = 0
-    error_count = 0
+    if 'user' in request.session:
+        current_user = request.session['user']
 
-    form = UploadFileForm()
+        success_count = 0
+        error_count = 0
 
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
+        form = UploadFileForm()
 
-        if form.is_valid() and 'file' in request.FILES:
-            file = request.FILES['file']
-            try:
-                reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
+        if request.method == 'POST':
+            form = UploadFileForm(request.POST, request.FILES)
 
-                for row in reader:
-                    # Parse data from the CSV row
-                    tconst = row['tconst']
-                    averageRating = row['averageRating']
-                    numVotes = row['numVotes']
+            if form.is_valid() and 'file' in request.FILES:
+                file = request.FILES['file']
+                try:
+                    reader = csv.DictReader(file.read().decode('utf-8').splitlines(), delimiter='\t')
 
-                    # Create or update Ratings instance
-                    created = Ratings.objects.update_or_create(
-                        tconst=tconst,
-                        defaults={
-                            'averageRating': averageRating,
-                            'numVotes': numVotes,
-                        }
-                    )
-                    if created:
-                        success_count += 1
-                    else:
-                        error_count += 1
-            except ValidationError:
-                error_count += 1
+                    for row in reader:
+                        # Parse data from the CSV row
+                        tconst = row['tconst']
+                        averageRating = row['averageRating']
+                        numVotes = row['numVotes']
 
-            message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
-            return HttpResponse(message)
+                        # Create or update Ratings instance
+                        created = Ratings.objects.update_or_create(
+                            tconst=tconst,
+                            defaults={
+                                'averageRating': averageRating,
+                                'numVotes': numVotes,
+                            }
+                        )
+                        if created:
+                            success_count += 1
+                        else:
+                            error_count += 1
+                except ValidationError:
+                    error_count += 1
 
-    return render(request, 'upload_ratings.html', {'form': form})
+                message = f"File uploaded and processed successfully. Created/Updated: {success_count}, Errors: {error_count}."
+                return HttpResponse(message)
+
+        return render(request, 'upload_ratings.html', {'form': form})
 
 def healthcheck(request):
-    db_conn = connections['default']
-    try:
-        db_conn.cursor()
-        # Additional checks can be added here
-        connection_string = "Server=http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
-        return render(request, 'healthcheck.html', {"status": "OK", "dataconnection": connection_string})
-    except OperationalError:
-        connection_string = "Server=http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
-        return render(request, 'healthcheck.html', {"status": "Failed", "dataconnection": connection_string})
+    if 'user' in request.session:
+        current_user = request.session['user']
+
+        db_conn = connections['default']
+        try:
+            db_conn.cursor()
+            # Additional checks can be added here
+            connection_string = "Server=http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+            return render(request, 'healthcheck.html', {"status": "OK", "dataconnection": connection_string})
+        except OperationalError:
+            connection_string = "Server=http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+            return render(request, 'healthcheck.html', {"status": "Failed", "dataconnection": connection_string})
 
 def healthcheck_json(request):
     db_conn = connections['default']
@@ -1243,91 +1290,91 @@ def reset_title_principals(request, file_path):
 
 
 def resetall(request):
-    # Delete data from Movies model
-    Movies.objects.all().delete()
-    movies_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.basics.tsv')
-    title_basics_response = reset_title_basics(request, file_path=movies_file_path)
+    if 'user' in request.session:
+        current_user = request.session['user']
 
-    if isinstance(title_basics_response, HttpResponse):
-        title_basics_message = title_basics_response.content.decode()
-        print(title_basics_message)
-    else:
-        title_basics_message = "Unexpected response type."
+        # Delete data from Movies model
+        Movies.objects.all().delete()
+        movies_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.basics.tsv')
+        title_basics_response = reset_title_basics(request, file_path=movies_file_path)
 
-    Names.objects.all().delete()
-    names_file_path = os.path.join(settings.BASE_DIR, 'truncated_name.basics.tsv')
-    name_basics_response = reset_name_basics(request, file_path=names_file_path)
+        if isinstance(title_basics_response, HttpResponse):
+            title_basics_message = title_basics_response.content.decode()
+            print(title_basics_message)
+        else:
+            title_basics_message = "Unexpected response type."
 
-    if isinstance(name_basics_response, HttpResponse):
-        name_basics_message = name_basics_response.content.decode()
-        print(name_basics_message)
-    else:
-        name_basics_message = "Unexpected response type."
+        Names.objects.all().delete()
+        names_file_path = os.path.join(settings.BASE_DIR, 'truncated_name.basics.tsv')
+        name_basics_response = reset_name_basics(request, file_path=names_file_path)
 
-    Crews.objects.all().delete()
-    crews_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.crew.tsv')
-    title_crews_response = reset_title_crews(request, file_path=crews_file_path)
+        if isinstance(name_basics_response, HttpResponse):
+            name_basics_message = name_basics_response.content.decode()
+            print(name_basics_message)
+        else:
+            name_basics_message = "Unexpected response type."
 
-    if isinstance(title_crews_response, HttpResponse):
-        title_crews_message = title_crews_response.content.decode()
-        print(title_crews_message)
-    else:
-        title_crews_message = "Unexpected response type."
-    
-    Episode.objects.all().delete()
-    episodes_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.episode.tsv')
-    title_episode_response = reset_title_episode(request, file_path=episodes_file_path)
+        Crews.objects.all().delete()
+        crews_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.crew.tsv')
+        title_crews_response = reset_title_crews(request, file_path=crews_file_path)
 
-    if isinstance(title_episode_response, HttpResponse):
-        title_episode_message = title_episode_response.content.decode()
-        print(title_episode_message)
-    else:
-        title_episode_message = "Unexpected response type."
-
-    Ratings.objects.all().delete()
-    ratings_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.ratings.tsv')
-    title_ratings_response = reset_title_ratings(request, file_path=ratings_file_path)
-
-    if isinstance(title_ratings_response, HttpResponse):
-        title_ratings_message = title_ratings_response.content.decode()
-        print(title_ratings_message)
-    else:
-        title_ratings_message = "Unexpected response type."
-
-    Akas.objects.all().delete()
-    akas_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.akas.tsv')
-    title_akas_response = reset_title_akas(request, file_path=akas_file_path)
-
-    if isinstance(title_akas_response, HttpResponse):
-        title_akas_message = title_akas_response.content.decode()
-        print(title_akas_message)
-    else:
-        title_akas_message = "Unexpected response type."
-    
-    Principals.objects.all().delete()
-    principals_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.principals.tsv')
-    title_principals_response = reset_title_principals(request, file_path=principals_file_path)
-
-    if isinstance(title_principals_response, HttpResponse):
-        title_principals_message = title_principals_response.content.decode()
-        print(title_principals_message)
-    else:
-        title_akas_message = "Unexpected response type."
-
+        if isinstance(title_crews_response, HttpResponse):
+            title_crews_message = title_crews_response.content.decode()
+            print(title_crews_message)
+        else:
+            title_crews_message = "Unexpected response type."
         
-        # Principals.objects.all().delete()
-    return render(request, 'resetall.html', 
-                  {'title_basics_message': title_basics_message,
-                    'name_basics_message': name_basics_message,
-                    'title_crews_message': title_crews_message,
-                    'title_episode_message': title_episode_message,
-                    'title_ratings_message': title_ratings_message,
-                    "title_akas_message": title_akas_message,
-                    "title_principals_message": title_principals_message
-                    })
-    
+        Episode.objects.all().delete()
+        episodes_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.episode.tsv')
+        title_episode_response = reset_title_episode(request, file_path=episodes_file_path)
 
+        if isinstance(title_episode_response, HttpResponse):
+            title_episode_message = title_episode_response.content.decode()
+            print(title_episode_message)
+        else:
+            title_episode_message = "Unexpected response type."
 
+        Ratings.objects.all().delete()
+        ratings_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.ratings.tsv')
+        title_ratings_response = reset_title_ratings(request, file_path=ratings_file_path)
+
+        if isinstance(title_ratings_response, HttpResponse):
+            title_ratings_message = title_ratings_response.content.decode()
+            print(title_ratings_message)
+        else:
+            title_ratings_message = "Unexpected response type."
+
+        Akas.objects.all().delete()
+        akas_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.akas.tsv')
+        title_akas_response = reset_title_akas(request, file_path=akas_file_path)
+
+        if isinstance(title_akas_response, HttpResponse):
+            title_akas_message = title_akas_response.content.decode()
+            print(title_akas_message)
+        else:
+            title_akas_message = "Unexpected response type."
+        
+        Principals.objects.all().delete()
+        principals_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.principals.tsv')
+        title_principals_response = reset_title_principals(request, file_path=principals_file_path)
+
+        if isinstance(title_principals_response, HttpResponse):
+            title_principals_message = title_principals_response.content.decode()
+            print(title_principals_message)
+        else:
+            title_akas_message = "Unexpected response type."
+
+            
+            # Principals.objects.all().delete()
+        return render(request, 'resetall.html', 
+                    {'title_basics_message': title_basics_message,
+                        'name_basics_message': name_basics_message,
+                        'title_crews_message': title_crews_message,
+                        'title_episode_message': title_episode_message,
+                        'title_ratings_message': title_ratings_message,
+                        "title_akas_message": title_akas_message,
+                        "title_principals_message": title_principals_message
+                        })
 
 
 @csrf_exempt  # Disable CSRF token for this example. Use cautiously.

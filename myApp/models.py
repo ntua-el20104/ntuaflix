@@ -11,6 +11,22 @@ class User(models.Model):
     def __str__(self):
         return self.username
 
+class Liked(models.Model):
+   username = models.CharField(max_length=30)
+   tconst = models.CharField(max_length=255)
+
+   class Meta:
+        # Define a composite primary key
+        unique_together = (('username', 'tconst'))
+
+class Disliked(models.Model):
+   username = models.CharField(max_length=30)
+   tconst = models.CharField(max_length=255)
+
+   class Meta:
+        # Define a composite primary key
+        unique_together = (('username', 'tconst'))
+
 
 class Names(models.Model):
   nconst = models.CharField(max_length=255, unique=True, primary_key=True)
