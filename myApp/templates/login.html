@@ -60,7 +60,7 @@
     </header>
     
 
-<form action=" " method="post">
+<form action="{% url 'login' %}" method="post">
     {% csrf_token %}
     <div style="height: 20px;"></div> <!-- Δημιουργούμε έναν κενό χώρο πριν το πεδίο username -->
     <label for="username">Username:</label>
@@ -71,6 +71,13 @@
     <div style="height: 15px;"></div> 
     <button type="submit">Login</button>
 </form>
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 
 </body>
 </html>
