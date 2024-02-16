@@ -23,6 +23,7 @@ from django.contrib import messages
 def home(request):
     if 'user' in request.session:
         current_user = request.session['user']
+        print(current_user)
 
             # If averageRating is still a CharField, convert it to float for ordering
         top_ratings = Ratings.objects.annotate(
@@ -42,8 +43,11 @@ def home(request):
         }
         return render(request, 'home.html', context)
     else:
-        messages.error(request, 'Please enter a valid Username or Password.')
-        return redirect('login')
+        message = 'Please enter a valid Username or Password.'
+        context = {
+        'message' : message,
+        }
+        return render(request,'login.html', context)
     return render(request, 'login.html')
 
 def login(request):
@@ -56,7 +60,11 @@ def login(request):
             request.session['user'] = uname
             return redirect('home')
         else:
-            return HttpResponse('Please enter valid Username or Password.')
+            message = 'Please enter a valid Username or Password.'
+            context = {
+            'message' : message,
+            }
+            return render(request,'login.html', context)
 
     return render(request, 'login.html')
 

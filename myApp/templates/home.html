@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ntuaflix</title>
+    
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -141,6 +142,7 @@
 <body>
     <header>
         <h1>Ntuaflix</h1>
+        <h2> Welcome {{ current_user }} </h2>
     </header>
     <nav>
         <a href="/ntuaflix_api/title">Movies</a>
@@ -150,7 +152,7 @@
     </nav>
     <div class="main-container">
         <div class="section preferences-section">
-            <h2>User Preferences</h2>
+            <h2>User Preferences for {{ current_user }}</h2>
             <!-- Dynamic content based on user preferences -->
         </div>
         <div class="section recommendations-section">
