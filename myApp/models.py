@@ -3,14 +3,6 @@ from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 
 
-
-class User(models.Model):
-    username = models.CharField(max_length=30)
-    password = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.username
-
 class Liked(models.Model):
    username = models.CharField(max_length=30)
    tconst = models.CharField(max_length=255)

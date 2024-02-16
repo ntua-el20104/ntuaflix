@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.template import loader 
 from django.http import HttpResponse
+from django.contrib.auth.models import User
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 import csv, json, re
@@ -14,6 +15,7 @@ from django.db.utils import OperationalError
 from django.db.models import F, FloatField
 from django.db.models.functions import Cast
 import os
+from django.contrib.auth import authenticate
 from django.conf import settings
 from django.contrib import messages
 
@@ -54,7 +56,7 @@ def login(request):
         uname = request.POST.get('username')
         pwd = request.POST.get('password')
 
-        check_user = User.objects.filter(username=uname, password=pwd)
+        check_user = authenticate(username=uname, password=pwd)
         if check_user:
             request.session['user'] = uname
             return redirect('home')
