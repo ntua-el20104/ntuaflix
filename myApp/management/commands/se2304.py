@@ -767,7 +767,8 @@ class Command(BaseCommand):
         os.system("python manage.py se2304 newepisode --filename truncated_title.episode.tsv")
         os.system("python manage.py se2304 newprincipals --filename truncated_title.principals.tsv")
         os.system("python manage.py se2304 newratings --filename truncated_title.ratings.tsv")
-        
+ 
+
     def login_user(self, options):
 
         # Assuming you're receiving 'username' and 'password' as POST parameters
@@ -798,7 +799,7 @@ class Command(BaseCommand):
             else:
                 print("Failed to post data. Status code:", response.status_code)
         else:
-            print("Authentication failed.")
+            print("Authentication failed.") 
 
 
     def health_check(self):
