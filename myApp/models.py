@@ -2,6 +2,16 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 
+
+
+class User(models.Model):
+    username = models.CharField(max_length=30)
+    password = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.username
+
+
 class Names(models.Model):
   nconst = models.CharField(max_length=255, unique=True, primary_key=True)
   primaryName = models.CharField(max_length=255, null=False)

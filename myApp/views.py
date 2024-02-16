@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.template import loader 
 from django.http import HttpResponse
@@ -15,32 +15,58 @@ from django.db.models import F, FloatField
 from django.db.models.functions import Cast
 import os
 from django.conf import settings
+from django.contrib import messages
+
 
 
 
 def home(request):
-    # If averageRating is still a CharField, convert it to float for ordering
-    top_ratings = Ratings.objects.annotate(
-        numeric_rating=Cast('averageRating', FloatField())
-    ).order_by('-numeric_rating')[:10]
+    if 'user' in request.session:
+        current_user = request.session['user']
+        print(current_user)
 
-    # Assuming Movies and Ratings share the same 'tconst' for identification
-    movies = Movies.objects.filter(tconst__in=[rating.tconst for rating in top_ratings])
-    titles = []
+            # If averageRating is still a CharField, convert it to float for ordering
+        top_ratings = Ratings.objects.annotate(
+            numeric_rating=Cast('averageRating', FloatField())
+        ).order_by('-numeric_rating')[:10]
 
-    for movie in movies:
-         titles.append((movie.tconst,movie.primaryTitle))
-    # Preparing context data for template
-    context = {
+        # Assuming Movies and Ratings share the same 'tconst' for identification
+        movies = Movies.objects.filter(tconst__in=[rating.tconst for rating in top_ratings])
+        titles = []
+
+        for movie in movies:
+            titles.append((movie.tconst,movie.primaryTitle))
+
+            context = {
         'titles': titles,
-    }
-
-    return render(request, 'home.html', context)
+        'current_user': current_user
+        }
+        return render(request, 'home.html', context)
+    else:
+        message = 'Please enter a valid Username or Password.'
+        context = {
+        'message' : message,
+        }
+        return render(request,'login.html', context)
+    return render(request, 'login.html')
 
 def login(request):
-    # Assuming you have context data to pass to the template, if any
-    context = {} 
-    return render(request, 'login.html', context)
+    if request.method == 'POST':
+        uname = request.POST.get('username')
+        pwd = request.POST.get('password')
+
+        check_user = User.objects.filter(username=uname, password=pwd)
+        if check_user:
+            request.session['user'] = uname
+            return redirect('home')
+        else:
+            message = 'Please enter a valid Username or Password.'
+            context = {
+            'message' : message,
+            }
+            return render(request,'login.html', context)
+
+    return render(request, 'login.html')
 
 def logout(request):
     template = loader.get_template('logout.html')
