@@ -4,6 +4,7 @@ from django.urls import path
 urlpatterns = [
     path("", views.home, name="home"),
     path("login",views.login, name="login"),
+    path("logout",views.logout,name="logout"),
 
     path("name", views.names, name="name"),
     path('name/<str:nconst>', views.name_details_json, name='name details json'),
@@ -14,13 +15,13 @@ urlpatterns = [
     path("title/<str:tconst>/html",views.title_details, name="title details html"),
 
     path("upload",views.upload, name="upload"),
-    path("upload/title_basics", views.upload_title_basics, name='upload title basics'),
-    path("upload/name_basics", views.upload_names, name='upload name basics'),
-    path("upload/title_akas", views.upload_akas, name='upload title akas'),
-    path("upload/title_crews", views.upload_crews, name='upload title crews'),
-    path("upload/title_principals", views.upload_principals, name='upload title principals'),
-    path("upload/title_episodes", views.upload_episodes, name='upload title episode'),
-    path("upload/title_ratings",views.upload_ratings, name='upload ratings'),
+    path("upload/titlebasics", views.upload_title_basics, name='upload title basics'),
+    path("upload/namebasics", views.upload_names, name='upload name basics'),
+    path("upload/titleakas", views.upload_akas, name='upload title akas'),
+    path("upload/titlecrew", views.upload_crews, name='upload title crews'),
+    path("upload/titleprincipals", views.upload_principals, name='upload title principals'),
+    path("upload/titleepisode", views.upload_episodes, name='upload title episode'),
+    path("upload/titleratings",views.upload_ratings, name='upload ratings'),
     path("healthcheck", views.healthcheck, name='health check'),
     path("resetall", views.resetall, name='reset all'),
     
@@ -34,4 +35,5 @@ urlpatterns = [
     path("bygenre",views.bygenre_json, name="bygenre_json"),
 
     path('application/x-www-form-urlencoded', views.user_endpoint_view, name='user-endpoint')
+    
 ]

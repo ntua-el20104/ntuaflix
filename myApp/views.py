@@ -38,7 +38,12 @@ def home(request):
     return render(request, 'home.html', context)
 
 def login(request):
-    template = loader.get_template('login.html')
+    # Assuming you have context data to pass to the template, if any
+    context = {} 
+    return render(request, 'login.html', context)
+
+def logout(request):
+    template = loader.get_template('logout.html')
     return HttpResponse(template.render())
 
 def bygenre(request):

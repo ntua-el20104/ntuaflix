@@ -63,13 +63,11 @@
 <form action=" " method="post">
     {% csrf_token %}
     <div style="height: 20px;"></div> <!-- Δημιουργούμε έναν κενό χώρο πριν το πεδίο username -->
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username">
+    <p>Are you sure you want to leave?</p>
     <div style="height: 10px;"></div> 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password">
+    <p>Until Next Time!</p>
     <div style="height: 15px;"></div> 
-    <button type="submit">Login</button>
+    <button type="submit">Logout</button>
 </form>
 
 </body>
