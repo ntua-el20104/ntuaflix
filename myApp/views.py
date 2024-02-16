@@ -18,6 +18,7 @@ import os
 from django.contrib.auth import authenticate
 from django.conf import settings
 from django.contrib import messages
+import requests
 
 
 
@@ -51,6 +52,12 @@ def home(request):
         return render(request,'login.html', context)
     return render(request, 'login.html')
 
+import requests
+import jwt
+from django.shortcuts import redirect, render
+from django.contrib.auth import authenticate
+from django.conf import settings
+
 def login(request):
     if request.method == 'POST':
         uname = request.POST.get('username')
@@ -59,15 +66,46 @@ def login(request):
         check_user = authenticate(username=uname, password=pwd)
         if check_user:
             request.session['user'] = uname
+
+            # Create a JWT token
+            payload = {
+                'username': uname,
+            }
+            jwt_token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+            
+            # URL to send the POST request to
+            url = 'http://127.0.0.1:9876/ntuaflix_api/application/x-www-form-urlencoded'
+            
+            # Headers for the POST request
+            headers = {
+                'Authorization': f'Bearer {jwt_token}',
+                'Content-Type': 'application/json',
+            }
+            
+            # Data for the POST request (if any), as a dictionary
+            data = {
+                'token': jwt_token
+            }
+            
+            # Send the POST request
+            try:
+                response = requests.post(url, headers=headers, json=data)
+                # Handle the response if needed
+                print(response.text)  # For debugging
+            except Exception as e:
+                # Handle any exceptions, such as connection errors
+                print(e)  # For debugging
+            
             return redirect('home')
         else:
             message = 'Please enter a valid Username or Password.'
             context = {
-            'message' : message,
+                'message': message,
             }
-            return render(request,'login.html', context)
+            return render(request, 'login.html', context)
 
     return render(request, 'login.html')
+
 
 def logout(request):
     template = loader.get_template('logout.html')
