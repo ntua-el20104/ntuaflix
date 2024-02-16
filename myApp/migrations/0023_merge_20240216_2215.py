@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('myApp', '0021_alter_user_password_alter_user_username'),
-        ('myApp', '0022_delete_customuser'),
+        ('myApp', '0023_delete_user'),
     ]
 
     operations = [
