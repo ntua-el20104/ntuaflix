@@ -13,6 +13,9 @@ import subprocess
 import os
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
+import jwt
+from django.conf import settings
+
 
 class Command(BaseCommand):
     help = 'Custom Command for our WebApp (Gamo Tin Patra)'
@@ -30,6 +33,9 @@ class Command(BaseCommand):
 
         # Health Check 
         healthcheck_parser = subparsers.add_parser('healthcheck')
+
+        # Logout 
+        logout_parser = subparsers.add_parser('logout')
 
         # Subparser for the login command
         login_parser = subparsers.add_parser('login')
@@ -177,6 +183,8 @@ class Command(BaseCommand):
             self.login_user(options)
         elif subcommand == 'healthcheck':
             self.health_check()
+        elif subcommand == 'logout':
+            self.logout_user()
 
     def add_user(self, username, password):
         try:
@@ -780,26 +788,54 @@ class Command(BaseCommand):
         
         if user is not None:
             # User is authenticated
+            # Create a JWT token
+            payload = {
+                'username': username,
+            }
+            jwt_token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+
             mydata = {
                 'username': username,
                 'password': password,
+                'token': jwt_token,
             }
 
+            current_user = "current.json"
+            with open(current_user, 'w') as file:
+                json.dump(mydata, file, indent=4)
 
             # Define the URL to which you want to make the POST request
             post_url = 'http://127.0.0.1:9876/ntuaflix_api/application/x-www-form-urlencoded'  # Change this to your actual endpoint URL
             
             # Make the POST request with JSON data
             headers = {'Content-Type': 'application/json'}  # Ensure the server expects JSON
-            response = requests.post(post_url, json=mydata, headers=headers)
+            response = requests.post(post_url, json={'token': jwt_token}, headers=headers)
             
             # Check response status (optional)
             if response.status_code == 200:
-                print("Data successfully posted.")
+                print("User logged in succesfully.")
             else:
                 print("Failed to post data. Status code:", response.status_code)
         else:
             print("Authentication failed.") 
+
+
+    def logout_user(self):
+        current_user = "current.json"
+        with open(current_user, 'r') as file:
+            # Load existing data
+            data = json.load(file)
+            token = data.get('token', None)
+            username = data.get('username', None)
+
+        if token != None:
+            print("User "+ username + " logged out succesfully!")
+            with open(current_user, 'w') as file:
+                json.dump({}, file, indent=4)
+        else:
+            print("No user currently logged in")
+        
+
 
 
     def health_check(self):
