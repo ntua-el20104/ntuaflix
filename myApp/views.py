@@ -664,7 +664,22 @@ def title_details(request, tconst):
                 elif Disliked.objects.filter(username=current_user, tconst=title.tconst).exists():
                     Disliked.objects.filter(username=current_user, tconst=title.tconst).delete()
                     messages.success(request, f"Movie dislike remove: {title.primaryTitle}")
+            if action == 'watchlist_add':
+                tconst= title.tconst
+                username =current_user
 
+                if not Watchlist.objects.filter(username=current_user, tconst=title.tconst).exists():
+                     Watchlist.objects.create(username=username, tconst=tconst)
+                     messages.success(request, f"Movie was added to watchlist: {title.primaryTitle}")
+
+            if action == 'watchlist_remove':
+                tconst= title.tconst
+                username =current_user
+
+                if Watchlist.objects.filter(username=current_user, tconst=title.tconst).exists():
+                   Watchlist.objects.filter(username=current_user, tconst=title.tconst).delete()
+                   messages.success(request, f"Movie was removed from watchlist: {title.primaryTitle}")
+                   
         return HttpResponse(template.render(titleObject,request))
     except Movies.DoesNotExist:
             return JsonResponse({'error': 'Movie not found'}, status=404)
