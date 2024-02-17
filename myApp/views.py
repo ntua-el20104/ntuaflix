@@ -26,6 +26,7 @@ import requests
 def home(request):
     if 'user' in request.session:
         current_user = request.session['user']
+        top_rated = None
 
             # If averageRating is still a CharField, convert it to float for ordering
         top_ratings = Ratings.objects.annotate(
@@ -52,22 +53,24 @@ def home(request):
             genre_movies_tconsts = Movies.objects.filter(
                 genres__contains=genre,
             ).values_list('tconst', flat=True)
-            
+
+
+
             # Get top 3 rated movies in this genre
             top_rated = Ratings.objects.filter(
                 tconst__in=genre_movies_tconsts
             ).annotate(
                 numeric_rating=Cast('averageRating', FloatField())
             ).order_by('-numeric_rating')[:3]
-            
+                
             top_movies_per_genre[genre] = Movies.objects.filter(tconst__in=[rating.tconst for rating in top_rated])
 
 
         context = {
-        'titles': titles,
-        'current_user': current_user,
-        'top_movies_per_genre': top_movies_per_genre,
-        'top_rated': top_rated
+            'titles': titles,
+            'current_user': current_user,
+            'top_movies_per_genre': top_movies_per_genre,
+            'top_rated': top_rated
         }
         return render(request, 'home.html', context)
     else:
