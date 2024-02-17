@@ -4,84 +4,87 @@
     <meta charset="UTF-8">
     <title>Login</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        body, html {
+            height: 100%;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column; /* Change to column to stack items vertically */
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: url('https://png.pngtree.com/thumb_back/fh260/background/20230703/pngtree-3d-rendered-movie-theatre-with-white-screen-image_3732826.jpg') no-repeat center center fixed; 
             background-size: cover;
             color: #333;
             line-height: 1.6;
-            justify-content: center;
+        }
+        header {
+            margin-top: 20px; /* Adjust as needed for spacing */
+            text-align: center;
+        }
+        header h1 {
+            color: #E53935;
+            text-transform: uppercase;
+            font-size: 3em;
+        }
+        .form-container {
             display: flex;
-            align-items: center;
+            flex: 1; /* Take up remaining space */
+            justify-content: center; /* Center horizontally in the flex container */
+            align-items: center; /* Center vertically */
+            width: 100%; /* Full width of the parent */
         }
         form {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 5px; 
+            width: 90%; /* Adjust width as needed */
+            max-width: 600px; /* Adjust max width for better appearance */
         }
-        label, input {
-            margin: 5px;
+        label, input, button {
+            width: 100%; /* Full width of the form */
+            margin: 5px 0; /* Adjust spacing */
+        }
+        input, button {
+            padding: 10px; /* Adjust padding */
+            border-radius: 5px;
         }
         input {
-            background-color: #808080; /* Γκρι φόντο στα input fields */
-            color: #fff; /* Λευκό κείμενο */
-            border: 1px solid #333; /* Σκούρο γκρι περίγραμμα */
+            background-color: #808080;
+            color: #fff;
+            border: 1px solid #333;
         }
         input::placeholder {
-            color: #ccc; /* Ανοιχτότερο γκρι για το placeholder κείμενο */
+            color: #ccc;
         }
         button {
-            padding: 15px 25px;
-            border: none;
-            border-radius: 5px;
-            background-color: #E53935; /* Changed to red shade */
+            background-color: #E53935;
             color: white;
             font-size: 1.2em;
             cursor: pointer;
             transition: background-color 0.3s ease-out;
         }
         button:hover {
-            background-color: #B71C1C; /* Darker shade for hover */
-        }
-        header {
-            text-align: center; /* Κεντράρισμα του κειμένου στο header */
-            padding: 20px 0; /* Προσθέτουμε padding για καλύτερη εμφάνιση */
-        }
-        header h1 {
-            color: #E53935; /* Κόκκινο χρώμα */
-            text-transform: uppercase; /* Κεφαλαία */
-            font-size: 3em;
+            background-color: #B71C1C;
         }
         h3 {
-    text-align: center;
-    color: red;       /* This makes the text color red */
-    font-weight: bold; /* This makes the text bold */
-}
-
-
-
+            text-align: center;
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <div class="centered-container">
-        <header>
-            <h1>Ntuaflix</h1>
-        </header>
-
+    <header>
+        <h1>Ntuaflix</h1>
+    </header>
+    <div class="form-container">
         <form action="{% url 'login' %}" method="post">
             {% csrf_token %}
-            <div style="height: 150px;"></div> <!-- Creating space before the username field -->
             <label for="username">Username:</label>
             <input type="text" id="username" name="username">
-            <div style="height: 10px;"></div> 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password">
-            <div style="height: 15px;"></div> 
             <button type="submit">Login</button>
-            <div style="height: 30px;"></div>
             {% if message %}    
             <h3>{{ message }}</h3>
             {% endif %}
