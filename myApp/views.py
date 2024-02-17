@@ -50,7 +50,6 @@ def home(request):
         'message' : message,
         }
         return render(request,'login.html', context)
-    return render(request, 'login.html')
 
 import requests
 import jwt
@@ -72,6 +71,7 @@ def login(request):
                 'username': uname,
             }
             jwt_token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+            
             
             # URL to send the POST request to
             url = 'http://127.0.0.1:9876/ntuaflix_api/application/x-www-form-urlencoded'
@@ -513,7 +513,7 @@ def search_titles_json(request):
             }
             titles_list.append(titleObject)
     return JsonResponse({'movies': titles_list})
-
+@csrf_exempt
 def title_details(request, tconst):
   if 'user' in request.session:
     current_user = request.session['user']
@@ -569,7 +569,7 @@ def title_details(request, tconst):
             'image_url': full_url,
             'rating':rating 
         }
-
+        
         titleObject = {
             'title':title,
             'titleID':title.tconst,
@@ -584,10 +584,52 @@ def title_details(request, tconst):
             'principals': principal_id_and_name,
             'rating':rating,
             'rating_object':rating_object,
-            'current_user': current_user
+            'current_user': current_user,
             # 'averageRating': rating.averageRating,
             # 'numVotes':rating.numVotes
         }
+        
+        if request.method == 'POST':
+            action = request.POST.get('action')
+            if action == 'like':
+                tconst = title.tconst
+                username = current_user
+                
+                if Disliked.objects.filter(username=current_user, tconst=title.tconst).exists():
+                    Disliked.objects.filter(username=current_user, tconst=title.tconst).delete()
+                    print("Dislike removed.")
+
+                if not Liked.objects.filter(username=current_user, tconst=title.tconst).exists():
+                    like = Liked.objects.create(username=username, tconst=tconst)
+                    messages.success(request, f"Movie liked: {title.primaryTitle}")
+                else:
+                    messages.success(request, f"Movie already liked: {title.primaryTitle}")
+            if action == 'dislike':
+                tconst = title.tconst
+                username = current_user
+
+                if Liked.objects.filter(username=current_user, tconst=title.tconst).exists():
+                    Liked.objects.filter(username=current_user, tconst=title.tconst).delete()
+                    print("Like removed.")
+
+                if not Disliked.objects.filter(username=current_user, tconst=title.tconst).exists():
+                    dislike = Disliked.objects.create(username=username, tconst=tconst)
+                    messages.success(request, f"Movie disliked: {title.primaryTitle}")
+                else:
+                    messages.success(request, f"Movie already disliked: {title.primaryTitle}")
+                # Redirect back to the same page to refresh and show the updated state
+                return redirect(request.path)
+            if action == 'remove':
+                tconst = title.tconst
+                username = current_user
+
+                if Liked.objects.filter(username=current_user, tconst=title.tconst).exists():
+                    Liked.objects.filter(username=current_user, tconst=title.tconst).delete()
+                    messages.success(request, f"Movie like remove: {title.primaryTitle}")
+                
+                elif Disliked.objects.filter(username=current_user, tconst=title.tconst).exists():
+                    Disliked.objects.filter(username=current_user, tconst=title.tconst).delete()
+                    messages.success(request, f"Movie dislike remove: {title.primaryTitle}")
 
         return HttpResponse(template.render(titleObject,request))
     except Movies.DoesNotExist:
