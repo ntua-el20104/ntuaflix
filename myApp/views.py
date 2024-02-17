@@ -465,6 +465,18 @@ def titles(request):
             'titles': titles
         }
         return HttpResponse(template.render(context, request))
+    
+def watchlist (request):
+    if 'user' in request.session:
+        current_user = request.session['user']
+
+        titles = Watchlist.objects.all().order_by('tconst').values() 
+        template = loader.get_template('watchlist.html')
+        context = {
+            'titles': titles
+        }
+        return HttpResponse(template.render(context, request))
+
 
 def search_titles(request):
     if 'user' in request.session:

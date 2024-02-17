@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Names</title>
+    <title>Movies</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,14 +13,14 @@
             color: #333;
             line-height: 1.6;
         }
-    
+
         header {
             background-color: black; /* A modern shade of blue */
             color: white;
             padding: 20px 0;
             text-align: center;
         }
-    
+
         nav {
             background-color: #1a1a1a;
             padding: 10px 0;
@@ -41,66 +41,16 @@
             color: #E53935; /* A shade of red for interactivity */
             text-decoration: underline;
         }
+
     
-        .search-section {
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-        }
-    
-        .search-section form {
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            margin: 20px auto;
-        }
-    
-        .search-box {
-            flex-grow: 1;
-            margin-right: 10px;
+        .filter-dropdown {
             padding: 15px;
             border: 2px solid #333;
             border-radius: 5px;
-            font-size: 1.2em;
-        }
-    
-        button {
-            padding: 15px 25px;
-            border: none;
-            border-radius: 5px;
-            background-color: #E53935; /* Changed to red shade */
-            color: white;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: background-color 0.3s ease-out;
-        }
-    
-        button:hover {
-            background-color: #B71C1C; /* Darker shade for hover */
-        }
-    
-        ul {
-            list-style-type: none;
-            padding: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            max-width: 800px;
-            margin: 20px auto;
-        }
-    
-        li {
-            background: #f9f9f9; /* Very light grey background */
-            border-radius: 5px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
-        }
-
-        li:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            margin-left: 10px;
+            background: white;
+            color: #333;
+            font-size: 1.2em; /* Matching font size with search box */
         }
         .logout-button {
            position: absolute;
@@ -123,6 +73,45 @@
                 right: 10px;
                 top: 10px;
             }
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 5px;
+            background-color: #E53935; /* Changed to red shade */
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease-out;
+        }
+
+        button:hover {
+            background-color: #B71C1C; /* Darker shade for hover */
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        li {
+            background: #f9f9f9; /* Very light grey background */
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+
+        li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
 
         li button {
@@ -150,24 +139,7 @@
             margin: 0;
             padding: 0;
         }
-    
-        @media (max-width: 768px) {
-            .search-section form {
-                flex-direction: column;
-            }
-    
-            .search-box, button {
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-    
-            nav a {
-                font-size: 14px;
-            }
-        }
     </style>
-    
 </head>
 <body>
 
@@ -184,24 +156,17 @@
     <a href="/ntuaflix_api/upload">Upload</a>
     <a href="/ntuaflix_api/bygenre/html">By Genre</a>
     <a href="/ntuaflix_api/watchlist">Watchlist</a>
-
 </nav>
 
-<div class="search-section">
-  <form action="{% url 'search_name' %}" method="get">
-      <input type="text" name="query" class="search-box" placeholder="Search for a name...">
-      <button type="submit">Search</button>
-  </form>
+<div class="section">
+    <ul class="movie-list">
+        {% for x in watchlist %}
+        <li>
+            <button onclick="location.href='title/{{ x.tconst }}/html'">{{ x.primaryTitle }}</button>
+        </li>
+        {% endfor %}
+    </ul>
 </div>
-
-
-<ul class="name-list">
-  {% for y in names %}
-  <li>
-    <button onclick="location.href='name/{{ y.nconst }}/html'">{{ y.primaryName }}</button>
-  </li>
-  {% endfor %}
-</ul>
 
 <footer>
     <p>© 2024 Ntuaflix</p>
