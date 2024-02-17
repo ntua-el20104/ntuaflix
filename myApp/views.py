@@ -73,6 +73,7 @@ def login(request):
             }
             jwt_token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
             
+            
             # URL to send the POST request to
             url = 'http://127.0.0.1:9876/ntuaflix_api/application/x-www-form-urlencoded'
             
