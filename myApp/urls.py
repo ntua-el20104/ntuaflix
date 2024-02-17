@@ -1,5 +1,6 @@
 from . import views
 from django.urls import path
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path("", views.home, name="home"),
@@ -34,6 +35,8 @@ urlpatterns = [
     path("bygenre/html",views.bygenre, name='bygenre_html'),
     path("bygenre",views.bygenre_json, name="bygenre_json"),
 
-    path('application/x-www-form-urlencoded', views.user_endpoint_view, name='user-endpoint')
+    path('application/x-www-form-urlencoded', views.user_endpoint_view, name='user-endpoint'),
     
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

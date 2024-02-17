@@ -19,6 +19,7 @@ from django.contrib.auth import authenticate
 from django.conf import settings
 from django.contrib import messages
 import requests
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 
