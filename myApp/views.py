@@ -39,9 +39,35 @@ def home(request):
         for movie in movies:
             titles.append((movie.tconst,movie.primaryTitle))
 
-            context = {
+        liked_movies_tconsts = Liked.objects.filter(username=current_user).values_list('tconst', flat=True)
+        liked_movies = Movies.objects.filter(tconst__in=liked_movies_tconsts)
+        genres = set()
+        for movie in liked_movies:
+            genres.update(movie.genres.split(','))
+
+        top_movies_per_genre = {}
+
+        for genre in genres:
+            # Filter movies that contain the genre and are liked by the user
+            genre_movies_tconsts = Movies.objects.filter(
+                genres__contains=genre,
+            ).values_list('tconst', flat=True)
+            
+            # Get top 3 rated movies in this genre
+            top_rated = Ratings.objects.filter(
+                tconst__in=genre_movies_tconsts
+            ).annotate(
+                numeric_rating=Cast('averageRating', FloatField())
+            ).order_by('-numeric_rating')[:3]
+            
+            top_movies_per_genre[genre] = Movies.objects.filter(tconst__in=[rating.tconst for rating in top_rated])
+
+
+        context = {
         'titles': titles,
-        'current_user': current_user
+        'current_user': current_user,
+        'top_movies_per_genre': top_movies_per_genre,
+        'top_rated': top_rated
         }
         return render(request, 'home.html', context)
     else:

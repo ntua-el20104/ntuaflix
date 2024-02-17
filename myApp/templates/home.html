@@ -178,7 +178,15 @@
     <div class="main-container">
         <div class="section preferences-section">
             <h2>User Preferences for {{ current_user }}</h2>
-            <!-- Dynamic content based on user preferences -->
+            {% for genre, movies in top_movies_per_genre.items %}
+                <h3>{{ genre }}</h3>
+                <ul>
+                    {% for movie in movies %}
+                        <li><a href="/ntuaflix_api/title/{{ movie.tconst }}/html">{{ movie.primaryTitle }}</a></li>
+                    {% endfor %}
+                </ul>
+                    {% endfor %}
+
         </div>
         <div class="section recommendations-section">
             <h2>Recommendations for You</h2>
