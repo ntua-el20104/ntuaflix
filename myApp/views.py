@@ -64,13 +64,18 @@ def home(request):
             ).order_by('-numeric_rating')[:3]
                 
             top_movies_per_genre[genre] = Movies.objects.filter(tconst__in=[rating.tconst for rating in top_rated])
+        
+        # Assuming 'current_user' holds the username of the logged-in user
+        watchlist_tconsts = Watchlist.objects.filter(username=current_user).values_list('tconst', flat=True)
+        watchlist_movies = Movies.objects.filter(tconst__in=watchlist_tconsts)
 
 
         context = {
             'titles': titles,
             'current_user': current_user,
             'top_movies_per_genre': top_movies_per_genre,
-            'top_rated': top_rated
+            'top_rated': top_rated,
+            'watchlist_movies': watchlist_movies,
         }
         return render(request, 'home.html', context)
     else:
@@ -79,12 +84,6 @@ def home(request):
         'message' : message,
         }
         return render(request,'login.html', context)
-
-import requests
-import jwt
-from django.shortcuts import redirect, render
-from django.contrib.auth import authenticate
-from django.conf import settings
 
 def login(request):
     if request.method == 'POST':
@@ -134,7 +133,6 @@ def login(request):
             return render(request, 'login.html', context)
 
     return render(request, 'login.html')
-
 
 def logout(request):
     # Check if the request method is POST
@@ -769,7 +767,6 @@ def upload(request):
 
         template = loader.get_template('upload.html')
         return HttpResponse(template.render())
-
 
 # @csrf_exempt  # Disable CSRF token for simplicity, consider CSRF protection for production
 @require_http_methods(["GET","POST"])
@@ -1422,7 +1419,6 @@ def reset_title_principals(request, file_path):
     
     return HttpResponse(message)
 
-
 def resetall(request):
     if 'user' in request.session:
         current_user = request.session['user']
@@ -1509,7 +1505,6 @@ def resetall(request):
                         "title_akas_message": title_akas_message,
                         "title_principals_message": title_principals_message
                         })
-
 
 @csrf_exempt  # Disable CSRF token for this example. Use cautiously.
 @require_http_methods(["POST"])  # Ensure that only POST requests are accepted.
