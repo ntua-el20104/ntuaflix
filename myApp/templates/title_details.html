@@ -82,7 +82,7 @@
     padding: 10px;
 }
 
-.like-button, .dislike-button {
+.like-button, .dislike-button, .remove-button {
     cursor: pointer;
     padding: 5px 10px;
     border: none;
@@ -96,6 +96,11 @@
 
 .dislike-button {
     background-color: #f44336; /* Red */
+    color: white;
+}
+
+.remove-button {
+    background-color: #1e42f7; /* Red */
     color: white;
 }
 
@@ -207,7 +212,15 @@
             <input type="hidden" name="username" value="{{ titleObject.current_user }}">
             <button type="submit" name="action" class="like-button" value="like">Like</button>
             <button type="submit" name="action" class="dislike-button" value="dislike">Dislike</button>
+            <button type="submit" name="action" class="remove-button" value="remove">Remove</button>
         </form>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
     <div class="movie-content">
         <h2>{{ primaryTitle }} ({{ startYear }})</h2>
