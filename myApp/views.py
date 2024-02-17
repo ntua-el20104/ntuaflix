@@ -50,7 +50,6 @@ def home(request):
         'message' : message,
         }
         return render(request,'login.html', context)
-    return render(request, 'login.html')
 
 import requests
 import jwt
