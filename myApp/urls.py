@@ -14,7 +14,6 @@ urlpatterns = [
     path("title/<str:tconst>",views.title_details_json, name="title details json"),
     path("title/<str:tconst>/html",views.title_details, name="title details html"),
 
-    path("watchlist",views.watchlist, name="watchlist"),
    
     path("upload",views.upload, name="upload"),
     path("upload/titlebasics", views.upload_title_basics, name='upload title basics'),

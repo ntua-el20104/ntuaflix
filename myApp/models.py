@@ -27,9 +27,6 @@ class Watchlist (models.Model):
         # Define a composite primary key
         unique_together = (('username', 'tconst'))
 
-       
-   
-
 class Names(models.Model):
   nconst = models.CharField(max_length=255, unique=True, primary_key=True)
   primaryName = models.CharField(max_length=255, null=False)
