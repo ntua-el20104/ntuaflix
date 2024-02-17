@@ -108,8 +108,16 @@ def login(request):
 
 
 def logout(request):
+    # Check if the request method is POST
+    if request.method == 'POST':
+        # End the user session
+        request.session.flush()
+        # Optionally, you can redirect the user to a login page or a home page after logging out
+        return redirect('login')  # Assuming 'login' is the name of your login view's URL
+
+    # If the request method is not POST, render the logout confirmation page
     template = loader.get_template('logout.html')
-    return HttpResponse(template.render())
+    return HttpResponse(template.render({}, request))
 
 def bygenre(request):
     if 'user' in request.session:
