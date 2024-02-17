@@ -1,0 +1,19 @@
+{
+    "answers": {
+        "phase": "deployment",
+        "action":  "requirements (functional)",
+        "scope": "documentation (text)",
+        "action experience": "little",
+        "prog lang": "other",
+        "other prog lang": "shell",
+        "tool": "chat gpt 4.x",
+        "other tool": "<fill in>",
+        "tool option": "full",
+        "tool experience": "enough",
+        "time allocated (h)": "0.1",
+        "time saved estimate (h)": "1", 
+        "quality of ai help": "minor modifications needed",
+        "generic feeling": "great in the future",
+        "notes": "<fill in>"
+    }
+}
