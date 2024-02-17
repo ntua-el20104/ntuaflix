@@ -176,6 +176,18 @@
         <a href="/ntuaflix_api/bygenre/html">By Genre</a>
     </nav>
     <div class="main-container">
+        <!-- Watch Later Section -->
+        <div class="section watchlist-section">
+            <h2>Your Watchlist</h2>
+            <ul>
+                {% for movie in watchlist_movies %}
+                    <li><a href="/ntuaflix_api/title/{{ movie.tconst }}/html">{{ movie.primaryTitle }}</a></li>
+                {% empty %}
+                    <li>You have no movies in your Watchlist.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
         <div class="section preferences-section">
             <h2>Recommendations based on your Preferences</h2>
             {% for genre, movies in top_movies_per_genre.items %}
