@@ -514,7 +514,7 @@ def search_titles_json(request):
             }
             titles_list.append(titleObject)
     return JsonResponse({'movies': titles_list})
-
+@csrf_exempt
 def title_details(request, tconst):
   if 'user' in request.session:
     current_user = request.session['user']
@@ -589,6 +589,34 @@ def title_details(request, tconst):
             # 'averageRating': rating.averageRating,
             # 'numVotes':rating.numVotes
         }
+
+        if request.method == 'POST':
+            action = request.POST.get('action')
+            if action == 'like':
+                tconst = title.tconst
+                username = current_user
+                
+                if Disliked.objects.filter(username=current_user, tconst=title.object).exists():
+                    Disliked.objects.filter(username=current_user, tconst=title.tconst).delete()
+                    print("Dislike removed.")
+
+                if not Liked.objects.filter(username=current_user, tconst=title.tconst).exists():
+                    like = Liked.objects.create(username=username, tconst=tconst)
+                    print(f"Movie liked: {title.primaryTitle}")
+
+            if action == 'dislike':
+                tconst = title.tconst
+                username = current_user
+
+                if Liked.objects.filter(username=current_user, tconst=title.tconst).exists():
+                    Liked.objects.filter(username=current_user, tconst=title.tconst).delete()
+                    print("Like removed.")
+
+                if not Disliked.objects.filter(username=current_user, tconst=title.tconst).exists():
+                    dislike = Disliked.objects.create(username=username, tconst=tconst)
+                    print(f"Movie disliked: {title.primaryTitle}")
+                # Redirect back to the same page to refresh and show the updated state
+                return redirect(request.path)
 
         return HttpResponse(template.render(titleObject,request))
     except Movies.DoesNotExist:

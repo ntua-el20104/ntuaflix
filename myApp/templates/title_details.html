@@ -76,6 +76,30 @@
             max-width: 400px;
         }
 
+        .movie-rating-buttons {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+.like-button, .dislike-button {
+    cursor: pointer;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+}
+
+.like-button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
+
+.dislike-button {
+    background-color: #f44336; /* Red */
+    color: white;
+}
+
+
         h1 {
             color:#fff;
             margin-top: 0;
@@ -150,6 +174,9 @@
                 max-width: 100%;
             }
         }
+
+        
+
     </style>
 </head>
 <body>
@@ -175,6 +202,12 @@
         {% else %}
             <p>Poster not available.</p>
         {% endif %}
+        <form action="" method="POST">
+            <input type="hidden" name="tconst" value="{{ titleObject.titleID }}">
+            <input type="hidden" name="username" value="{{ titleObject.current_user }}">
+            <button type="submit" name="action" class="like-button" value="like">Like</button>
+            <button type="submit" name="action" class="dislike-button" value="dislike">Dislike</button>
+        </form>
     </div>
     <div class="movie-content">
         <h2>{{ primaryTitle }} ({{ startYear }})</h2>
