@@ -111,7 +111,7 @@
             opacity: 0.8;
         }
     
-        h1, h2 {
+        h1{
             color: #fff;
             margin-top: 0;
         }
@@ -235,19 +235,20 @@
             <p><strong>Genre:</strong> {{ genres }}</p>
             <p><strong>End Year:</strong> {{ endYear }}</p>
             
-            {% if rating_object %}
-                <div class="rating-section">
-                    <h2>Rating Details</h2>
+            <div class="rating-section">
+                <h2>Rating Details</h2>
+                {% if rating_object %}
                     <dl>
                         <dt>Average Rating:</dt>
                         <dd>{{ rating.averageRating }} / 10</dd>
                         <dt>Number of Votes:</dt>
                         <dd>{{ rating.numVotes }}</dd>
                     </dl>
-                </div>
-            {% else %}
-                <p>There are no available ratings for this title.</p>
-            {% endif %}
+                {% else %}
+                    <p>There are no available ratings for this title.</p>
+                {% endif %}
+            </div>
+            
 
             {% if principals %}
                 <h2>Principals</h2>
