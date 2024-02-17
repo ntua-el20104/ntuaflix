@@ -82,7 +82,7 @@
     padding: 10px;
 }
 
-.like-button, .dislike-button, .remove-button {
+.like-button, .dislike-button, .remove-button, .add_watchlist-button, .remove_watchlist-button {
     cursor: pointer;
     padding: 5px 10px;
     border: none;
@@ -100,9 +100,18 @@
 }
 
 .remove-button {
-    background-color: #1e42f7; /* Red */
+    background-color: #1e42f7; 
     color: white;
 }
+.add_watchlist-button{
+    background-color: #4CAF50; 
+    color: white;
+}
+.remove_watchlist-button {
+    background-color: #1e42f7; 
+    color: white;
+}
+
 
 
         h1 {
@@ -213,6 +222,9 @@
             <button type="submit" name="action" class="like-button" value="like">Like</button>
             <button type="submit" name="action" class="dislike-button" value="dislike">Dislike</button>
             <button type="submit" name="action" class="remove-button" value="remove">Remove</button>
+            <div style="height: 10px;"></div>
+            <button type="submit" name="action" class="add_watchlist-button" value="watchlist_add">Add to Watchlist</button>
+            <button type="submit" name="action" class="remove_watchlist-button" value="watchlist_remove">Remove from Watchlist</button>
         </form>
         {% if messages %}
             {% for message in messages %}
