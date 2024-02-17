@@ -12,14 +12,14 @@
             background-size: cover;
             color: #333;
         }
-
+    
         header, .footer {
             background-color: #000000;
             color: white;
             text-align: center;
             padding: 20px 0;
         }
-
+    
         nav {
             background-color: #1a1a1a;
             padding: 10px 0;
@@ -40,7 +40,7 @@
             color: #E53935; /* A shade of red for interactivity */
             text-decoration: underline;
         }
-
+    
         .container {
             display: flex;
             justify-content: center;
@@ -50,7 +50,7 @@
             max-width: 1200px;
             margin: 0 auto;
         }
-
+    
         .movie-content, .movie-sidebar {
             background-color: #fff;
             padding: 20px;
@@ -58,94 +58,96 @@
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-
+    
         .movie-sidebar {
             flex: 1 0 200px;
             max-width: 30%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
             max-height: fit-content;
         }
-
+    
         .movie-content {
             flex: 2;
             max-width: 70%;
         }
-
+    
         .movie-image img {
-            width: 100%;
+            width: auto;
+            max-width: 100%;
+            height: auto;
             border-radius: 8px;
-            max-width: 400px;
         }
-
-        .movie-rating-buttons {
-    display: flex;
-    justify-content: space-around;
-    padding: 10px;
-}
-
-.like-button, .dislike-button, .remove-button {
-    cursor: pointer;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-}
-
-.like-button {
-    background-color: #4CAF50; /* Green */
-    color: white;
-}
-
-.dislike-button {
-    background-color: #f44336; /* Red */
-    color: white;
-}
-
-.remove-button {
-    background-color: #1e42f7; /* Red */
-    color: white;
-}
-
-
-        h1 {
-            color:#fff;
+    
+        .like-button, .dislike-button, .remove-button {
+            cursor: pointer;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+    
+        .like-button {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+    
+        .dislike-button {
+            background-color: #f44336; /* Red */
+            color: white;
+        }
+    
+        .remove-button {
+            background-color: #1e42f7; /* Blue */
+            color: white;
+        }
+    
+        .like-button:hover, .dislike-button:hover, .remove-button:hover {
+            opacity: 0.8;
+        }
+    
+        h1{
+            color: #fff;
             margin-top: 0;
         }
-         h2 {
-            color: #444;
-            margin-top: 20px;
-        }
-
+    
         .movie-details p, .footer p, dd, dt {
             font-size: 16px;
             line-height: 1.6;
         }
-
+    
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
+    
         th, td {
             text-align: left;
             padding: 8px;
             border-bottom: 1px solid #ddd;
         }
-
+    
         th {
             background-color: #f2f2f2;
         }
-
+    
         a {
-        color: #E53935; /* Red color for all links */
-        text-decoration: none;
-        transition: color 0.3s ease-out;
-    }
-
-    a:hover {
-        color: #B71C1C; /* Darker red on hover */
-        text-decoration: underline;
-    }
-
+            color: #E53935; /* Red color for all links */
+            text-decoration: none;
+            transition: color 0.3s ease-out;
+        }
+    
+        a:hover {
+            color: #B71C1C; /* Darker red on hover */
+            text-decoration: underline;
+        }
+    
         .rating-section {
             background-color: #fff;
             padding: 15px;
@@ -153,36 +155,39 @@
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-
+    
         dl {
             display: grid;
             grid-template-columns: auto auto;
             gap: 10px 20px;
             margin: 0;
         }
-
+    
         dt {
             font-weight: bold;
         }
-
+    
         dd {
             margin: 0;
             text-align: right;
         }
-
+    
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
             }
-
+    
             .movie-sidebar, .movie-content {
                 max-width: 100%;
             }
+    
+            .like-button, .dislike-button, .remove-button {
+                width: 100%;
+                margin: 10px 0;
+            }
         }
-
-        
-
     </style>
+    
 </head>
 <body>
 
@@ -230,19 +235,20 @@
             <p><strong>Genre:</strong> {{ genres }}</p>
             <p><strong>End Year:</strong> {{ endYear }}</p>
             
-            {% if rating_object %}
-                <div class="rating-section">
-                    <h2>Rating Details</h2>
+            <div class="rating-section">
+                <h2>Rating Details</h2>
+                {% if rating_object %}
                     <dl>
                         <dt>Average Rating:</dt>
                         <dd>{{ rating.averageRating }} / 10</dd>
                         <dt>Number of Votes:</dt>
                         <dd>{{ rating.numVotes }}</dd>
                     </dl>
-                </div>
-            {% else %}
-                <p>There are no available ratings for this title.</p>
-            {% endif %}
+                {% else %}
+                    <p>There are no available ratings for this title.</p>
+                {% endif %}
+            </div>
+            
 
             {% if principals %}
                 <h2>Principals</h2>
