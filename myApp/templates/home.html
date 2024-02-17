@@ -60,6 +60,29 @@
             color: #333;
             margin-bottom: 20px;
         }
+        .logout-button {
+           position: absolute;
+            right: 20px;
+            top: 20px;
+            padding: 10px 20px;
+            background-color: #E53935; /* Κόκκινο φόντο */
+            color: white; /* Άσπρα γράμματα */
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .logout-button {
+                font-size: 14px;
+                padding: 5px 10px;
+                right: 10px;
+                top: 10px;
+            }
+        }
+
 
         ul {
             list-style: none;
@@ -143,6 +166,8 @@
     <header>
         <h1>Ntuaflix</h1>
         <h2> Welcome {{ current_user }} </h2>
+        <a href="/ntuaflix_api/logout" class="logout-button">Logout</a>
+
     </header>
     <nav>
         <a href="/ntuaflix_api/title">Movies</a>
