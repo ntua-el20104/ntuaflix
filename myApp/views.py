@@ -1522,6 +1522,47 @@ def resetall(request):
                         "title_principals_message": title_principals_message
                         })
 
+from django.http import JsonResponse
+import os
+from django.conf import settings
+
+def resetall_json(request):
+    try:
+        if 'user' not in request.session:
+            # If the user is not in session, return failure
+            return JsonResponse({"status": "failed", "reason": "User not logged in."}, status=403)
+
+        current_user = request.session['user']
+
+        # Deleting all data from the models
+        Liked.objects.all().delete()
+        Disliked.objects.all().delete()
+        Watchlist.objects.all().delete()
+        Movies.objects.all().delete()
+        Names.objects.all().delete()
+        Crews.objects.all().delete()
+        Episode.objects.all().delete()
+        Ratings.objects.all().delete()
+        Akas.objects.all().delete()
+        Principals.objects.all().delete()
+
+        # Reset data from TSV files (assuming these functions are defined elsewhere in your code)
+        # Note: This pseudocode assumes reset functions exist and do not throw uncaught exceptions.
+        # You might need to implement error handling within those functions or here if they can fail.
+        reset_title_basics(request, file_path=os.path.join(settings.BASE_DIR, 'truncated_title.basics.tsv'))
+        reset_name_basics(request, file_path=os.path.join(settings.BASE_DIR, 'truncated_name.basics.tsv'))
+        reset_title_crews(request, file_path=os.path.join(settings.BASE_DIR, 'truncated_title.crew.tsv'))
+        reset_title_episode(request, file_path=os.path.join(settings.BASE_DIR, 'truncated_title.episode.tsv'))
+        reset_title_ratings(request, file_path=os.path.join(settings.BASE_DIR, 'truncated_title.ratings.tsv'))
+        reset_title_akas(request, file_path=os.path.join(settings.BASE_DIR, 'truncated_title.akas.tsv'))
+        reset_title_principals(request, file_path=os.path.join(settings.BASE_DIR, 'truncated_title.principals.tsv'))
+
+        return JsonResponse({"status": "OK"}, status=200)
+
+    except Exception as e:
+        # Catch any exception and return failure status with the reason
+        return JsonResponse({"status": "failed", "reason": str(e)}, status=500)
+
 @csrf_exempt  # Disable CSRF token for this example. Use cautiously.
 @require_http_methods(["POST"])  # Ensure that only POST requests are accepted.
 def user_endpoint_view(request):
