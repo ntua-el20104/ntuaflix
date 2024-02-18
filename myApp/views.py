@@ -149,6 +149,7 @@ def logout(request):
     template = loader.get_template('logout.html')
     return HttpResponse(template.render({}, request))
 
+
 def bygenre(request):
     if 'user' in request.session:
         current_user = request.session['user']
