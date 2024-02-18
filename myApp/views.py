@@ -467,6 +467,7 @@ def titles(request):
         }
         return HttpResponse(template.render(context, request))
 
+
 def search_titles(request):
     if 'user' in request.session:
         current_user = request.session['user']
@@ -679,6 +680,7 @@ def title_details(request, tconst):
             if action == 'watchlist_remove':
                 tconst= title.tconst
                 username =current_user
+
 
                 if Watchlist.objects.filter(username=current_user, tconst=title.tconst).exists():
                    Watchlist.objects.filter(username=current_user, tconst=title.tconst).delete()

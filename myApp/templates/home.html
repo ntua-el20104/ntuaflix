@@ -189,7 +189,7 @@
         </div>
         
         <div class="section preferences-section">
-            <h2>User Preferences for {{ current_user }}</h2>
+            <h2>Recommendations based on your Preferences</h2>
             {% for genre, movies in top_movies_per_genre.items %}
                 <h3>{{ genre }}</h3>
                 <ul>
@@ -201,7 +201,7 @@
 
         </div>
         <div class="section recommendations-section">
-            <h2>Recommendations for You</h2>
+            <h2>Recommendations for You based on Ratings </h2>
             <ul>
                 {% for title in titles %}
                 <li><a href="/ntuaflix_api/title/{{ title.0 }}/html">{{ title.1 }}</a></li>
