@@ -29,7 +29,8 @@ urlpatterns = [
     path("admin/healthcheck/html", views.healthcheck, name='health check'),
     path("admin/healthcheck", views.healthcheck_json, name='health check_json'),
 
-    path("admin/resetall", views.resetall, name='reset all'),
+    path("admin/resetall", views.resetall_json, name='reset all json'),
+    path("admin/resetall/html", views.resetall, name='reset all'),
     
     path("searchtitle/html", views.search_titles, name='search_title'),
     path("searchtitle", views.search_titles_json, name='search_title_json'),
