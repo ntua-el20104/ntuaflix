@@ -220,11 +220,9 @@
 </head>
 
 <body>
-
     <header>
         <h1>Ntuaflix Data Management</h1>
         <a href="/ntuaflix_api/logout" class="logout-button">Logout</a>
-
     </header>
 
     <nav>
@@ -235,23 +233,25 @@
         <a href="/ntuaflix_api/bygenre/html">By Genre</a>
     </nav>
 
-    <div>
-        <ul>
-            <li><a href="/ntuaflix_api/upload/titlebasics">Upload Title Basics</a></li>
-            <li><a href="/ntuaflix_api/upload/namebasics">Upload Name Basics</a></li>
-            <li><a href="/ntuaflix_api/upload/titleakas">Upload Title Akas</a></li>
-            <li><a href="/ntuaflix_api/upload/titleprincipals">Upload Title Principals</a></li>
-            <li><a href="/ntuaflix_api/upload/titleratings">Upload Title Ratings</a></li>
-            <li><a href="/ntuaflix_api/upload/titleepisode">Upload Title Episodes</a></li>
-            <li><a href="/ntuaflix_api/upload/titlecrew">Upload Title Crews</a></li>
-            <li><a href="/ntuaflix_api/healthcheck">Health Check</a></li>
-            <li><a href="/ntuaflix_api/resetall" id="resetAll">Reset All</a></li>
-
-
-
-            <!-- Add more links as needed for other upload categories -->
-        </ul>
-    </div>
+    {% if is_superuser %}
+        <div>
+            <ul>
+                <li><a href="/ntuaflix_api/upload/titlebasics">Upload Title Basics</a></li>
+                <li><a href="/ntuaflix_api/upload/namebasics">Upload Name Basics</a></li>
+                <li><a href="/ntuaflix_api/upload/titleakas">Upload Title Akas</a></li>
+                <li><a href="/ntuaflix_api/upload/titleprincipals">Upload Title Principals</a></li>
+                <li><a href="/ntuaflix_api/upload/titleratings">Upload Title Ratings</a></li>
+                <li><a href="/ntuaflix_api/upload/titleepisode">Upload Title Episodes</a></li>
+                <li><a href="/ntuaflix_api/upload/titlecrew">Upload Title Crews</a></li>
+                <li><a href="/ntuaflix_api/healthcheck">Health Check</a></li>
+                <li><a href="/ntuaflix_api/resetall" id="resetAll">Reset All</a></li>
+            </ul>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 20px;">
+            <p>Content only available for admin.</p>
+        </div>
+    {% endif %}
 
     <footer>
         <p>Back to <a href="/ntuaflix_api">Home</a></p>
@@ -272,8 +272,7 @@
             }
         });
     </script>
-    
-
 </body>
+
 
 </html>

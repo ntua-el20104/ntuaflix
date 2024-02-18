@@ -20,6 +20,8 @@ from django.conf import settings
 from django.contrib import messages
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
+import jwt
+from django.shortcuts import render, redirect
 
 
 
@@ -764,12 +766,21 @@ def title_details_json(request, tconst):
 
 def upload(request):
     if 'user' in request.session:
-        current_user = request.session['user']
+        # Assuming 'user' session key holds the username
+        username = request.session['user']
+        try:
+            user = User.objects.get(username=username)
+            is_superuser = user.is_superuser
+        except User.DoesNotExist:
+            # Handle the case where the user does not exist if necessary
+            is_superuser = False
 
-        template = loader.get_template('upload.html')
-        return HttpResponse(template.render())
+        context = {'is_superuser': is_superuser}
+        return render(request, 'upload.html', context)
+    else:
+        # Redirect to login or another appropriate page if the user is not in session
+        return redirect('/login/')  # Adjust the redirect URL as needed
 
-# @csrf_exempt  # Disable CSRF token for simplicity, consider CSRF protection for production
 @require_http_methods(["GET","POST"])
 def upload_title_basics(request):
     if 'user' in request.session:
