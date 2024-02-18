@@ -18,6 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('ntuaflix_api/admin/', admin.site.urls),
+    path('ntuaflix_api/admin2304/', admin.site.urls),
     path('ntuaflix_api/',include("myApp.urls")),
 ]
