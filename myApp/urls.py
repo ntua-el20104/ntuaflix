@@ -24,7 +24,9 @@ urlpatterns = [
     path("admin/upload/titleprincipals", views.upload_principals, name='upload title principals'),
     path("admin/upload/titleepisode", views.upload_episodes, name='upload title episode'),
     path("admin/upload/titleratings",views.upload_ratings, name='upload ratings'),
-    path("admin/healthcheck", views.healthcheck, name='health check'),
+    path("admin/healthcheck/html", views.healthcheck, name='health check'),
+    path("admin/healthcheck", views.healthcheck_json, name='health check_json'),
+
     path("admin/resetall", views.resetall, name='reset all'),
     
     path("searchtitle/html", views.search_titles, name='search_title'),
