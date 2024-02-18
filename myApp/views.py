@@ -1128,10 +1128,10 @@ def healthcheck(request):
         try:
             db_conn.cursor()
             # Additional checks can be added here
-            connection_string = "Server=http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+            connection_string = "Server=http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; "
             return render(request, 'healthcheck.html', {"status": "OK", "dataconnection": connection_string})
         except OperationalError:
-            connection_string = "Server=http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+            connection_string = "Server=http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; "
             return render(request, 'healthcheck.html', {"status": "Failed", "dataconnection": connection_string})
 
 def healthcheck_json(request):
@@ -1140,10 +1140,10 @@ def healthcheck_json(request):
         db_conn.cursor()
         # Εδώ μπορείτε να προσθέσετε οποιοδήποτε άλλο test θεωρείτε απαραίτητο
         # για να επιβεβαιώσετε τη συνδεσιμότητα με τη βάση δεδομένων ή με ένα API.
-        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3;"
         return JsonResponse({"status": "OK", "dataconnection": connection_string})
     except OperationalError:
-        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3; User Id=myUsername;Password=myPassword;"
+        connection_string = "Server= http://127.0.0.1:9876/ntuaflix_api; Database=django.db.backends.sqlite3;"
         return JsonResponse({"status": "failed", "dataconnection": connection_string})
 
 @require_http_methods(["GET"])
