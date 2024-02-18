@@ -19,6 +19,9 @@ from django.contrib.auth import authenticate
 from django.conf import settings
 from django.contrib import messages
 import requests
+from rest_framework_simplejwt.tokens import RefreshToken
+import jwt
+from django.shortcuts import render, redirect
 
 
 
@@ -64,13 +67,18 @@ def home(request):
             ).order_by('-numeric_rating')[:3]
                 
             top_movies_per_genre[genre] = Movies.objects.filter(tconst__in=[rating.tconst for rating in top_rated])
+        
+        # Assuming 'current_user' holds the username of the logged-in user
+        watchlist_tconsts = Watchlist.objects.filter(username=current_user).values_list('tconst', flat=True)
+        watchlist_movies = Movies.objects.filter(tconst__in=watchlist_tconsts)
 
 
         context = {
             'titles': titles,
             'current_user': current_user,
             'top_movies_per_genre': top_movies_per_genre,
-            'top_rated': top_rated
+            'top_rated': top_rated,
+            'watchlist_movies': watchlist_movies,
         }
         return render(request, 'home.html', context)
     else:
@@ -79,12 +87,6 @@ def home(request):
         'message' : message,
         }
         return render(request,'login.html', context)
-
-import requests
-import jwt
-from django.shortcuts import redirect, render
-from django.contrib.auth import authenticate
-from django.conf import settings
 
 def login(request):
     if request.method == 'POST':
@@ -134,7 +136,6 @@ def login(request):
             return render(request, 'login.html', context)
 
     return render(request, 'login.html')
-
 
 def logout(request):
     # Check if the request method is POST
@@ -466,6 +467,7 @@ def titles(request):
         }
         return HttpResponse(template.render(context, request))
 
+
 def search_titles(request):
     if 'user' in request.session:
         current_user = request.session['user']
@@ -679,6 +681,7 @@ def title_details(request, tconst):
                 tconst= title.tconst
                 username =current_user
 
+
                 if Watchlist.objects.filter(username=current_user, tconst=title.tconst).exists():
                    Watchlist.objects.filter(username=current_user, tconst=title.tconst).delete()
                    messages.success(request, f"Movie was removed from watchlist: {title.primaryTitle}")
@@ -765,13 +768,21 @@ def title_details_json(request, tconst):
 
 def upload(request):
     if 'user' in request.session:
-        current_user = request.session['user']
+        # Assuming 'user' session key holds the username
+        username = request.session['user']
+        try:
+            user = User.objects.get(username=username)
+            is_superuser = user.is_superuser
+        except User.DoesNotExist:
+            # Handle the case where the user does not exist if necessary
+            is_superuser = False
 
-        template = loader.get_template('upload.html')
-        return HttpResponse(template.render())
+        context = {'is_superuser': is_superuser}
+        return render(request, 'upload.html', context)
+    else:
+        # Redirect to login or another appropriate page if the user is not in session
+        return redirect('/login/')  # Adjust the redirect URL as needed
 
-
-# @csrf_exempt  # Disable CSRF token for simplicity, consider CSRF protection for production
 @require_http_methods(["GET","POST"])
 def upload_title_basics(request):
     if 'user' in request.session:
@@ -1422,7 +1433,6 @@ def reset_title_principals(request, file_path):
     
     return HttpResponse(message)
 
-
 def resetall(request):
     if 'user' in request.session:
         current_user = request.session['user']
@@ -1509,7 +1519,6 @@ def resetall(request):
                         "title_akas_message": title_akas_message,
                         "title_principals_message": title_principals_message
                         })
-
 
 @csrf_exempt  # Disable CSRF token for this example. Use cautiously.
 @require_http_methods(["POST"])  # Ensure that only POST requests are accepted.
