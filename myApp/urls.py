@@ -18,6 +18,8 @@ urlpatterns = [
    
     path("upload",views.upload, name="upload"),
     path("admin/upload/titlebasics", views.upload_title_basics, name='upload title basics'),
+    path("admin/upload/titlebasics", views.upload_title_basics, name='upload title basics'),
+
     path("admin/upload/namebasics", views.upload_names, name='upload name basics'),
     path("admin/upload/titleakas", views.upload_akas, name='upload title akas'),
     path("admin/upload/titlecrew", views.upload_crews, name='upload title crews'),
