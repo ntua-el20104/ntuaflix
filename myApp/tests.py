@@ -1,5 +1,5 @@
 
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.management import call_command
 
@@ -26,3 +26,25 @@ class CommandTestCase2(TestCase):
         # Setup
         user = User.objects.create_user('testuser', password='secret')
         self.client.login(username='testuser', password='secret')
+
+from django.test import TestCase
+from django.contrib.auth.models import User
+from myApp.models import Disliked, Movies  
+
+class DislikeActionTestCase(TestCase):
+    def setUp(self):
+        # Αρχικοποίηση του testing environment
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.title = Movies.objects.create(tconst='t123', primaryTitle='Test Movie',titleType='short',originalTitle="Test",startYear="1999",runtimeMinutes="60")
+        self.client.login(username='testuser', password='12345')
+        
+    def test_dislike_action(self):
+
+        # Εκτέλεση της ενέργειας "dislike"
+        response = self.client.post("/title/{self.title.tconst}/html", {'action': 'dislike'})
+        
+        # Ελέγχουμε αν το "dislike" έχει προστεθεί
+        self.assertTrue(Disliked.objects.filter(username=self.user.username, tconst=self.title.tconst).exists())
+        
+        # Επιβεβαιώνουμε την επιτυχή ανακατεύθυνση
+        self.assertEqual(response.status_code, 302)
