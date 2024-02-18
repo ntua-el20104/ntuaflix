@@ -1436,7 +1436,9 @@ def reset_title_principals(request, file_path):
 def resetall(request):
     if 'user' in request.session:
         current_user = request.session['user']
-
+        Liked.objects.all().delete()
+        Disliked.objects.all().delete()
+        Watchlist.objects.all().delete()
         # Delete data from Movies model
         Movies.objects.all().delete()
         movies_file_path = os.path.join(settings.BASE_DIR, 'truncated_title.basics.tsv')
